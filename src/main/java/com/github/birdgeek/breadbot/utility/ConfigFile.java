@@ -72,15 +72,27 @@ public class ConfigFile {
 	 * String Arrays
 	 */
 	public static String[] getApprovedUsers() {
-		return (String[])discord.getModerators().toArray();
+		String[] build = new String[discord.getModerators().size()];
+		for(int i = 0; i < discord.getModerators().size(); i++) {
+			build[i] = discord.getModerators().get(i);
+		}
+		return build;
 	}
 	
 	public static String[] getApprovedIRCUsers() {
-		return (String[])twitch.getModerators().toArray();
+		String[] build = new String[twitch.getModerators().size()];
+		for(int i = 0; i < twitch.getModerators().size(); i++) {
+			build[i] = twitch.getModerators().get(i);
+		}
+		return build;
 	}
 	
 	public static String[] getIgnoredIrcUsers() {
-		return (String[])twitch.getIgnoredUsers().toArray();
+		String[] build = new String[twitch.getIgnoredUsers().size()];
+		for(int i = 0; i < twitch.getIgnoredUsers().size(); i++) {
+			build[i] = twitch.getIgnoredUsers().get(i);
+		}
+		return build;
 	}
 	public static String getHitboxRepeaters() {
 		String build = "";
