@@ -1,0 +1,20 @@
+Merge remote-tracking branch 'origin/master'
+
+Conflicts:
+	.classpath
+	.gitignore
+	.settings/org.eclipse.jdt.core.prefs
+	README.md
+	help.txt
+	pom.xml
+	release_notes.md
+	src/main/java/com/github/birdgeek/breadbot/BotMain.java
+	src/main/java/com/github/birdgeek/breadbot/discord/DiscordMain.java
+	src/main/java/com/github/birdgeek/breadbot/discord/DiscordToTwitchEvent.java
+	src/main/java/com/github/birdgeek/breadbot/discord/PmEvent.java
+	src/main/java/com/github/birdgeek/breadbot/irc/ChatListener.java
+	src/main/java/com/github/birdgeek/breadbot/irc/IrcMain.java
+	src/main/java/com/github/birdgeek/breadbot/utility/ConfigFile.java
+	src/main/java/com/github/birdgeek/breadbot/utility/DiscordUtility.java
+	src/main/java/com/github/birdgeek/breadbot/utility/IrcUtility.java
+	src/main/java/com/github/birdgeek/breadbot/utility/StatsFile.java
