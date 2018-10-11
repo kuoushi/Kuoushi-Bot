@@ -1,7 +1,6 @@
 package com.github.birdgeek.breadbot.discord;
 
 import java.util.Random;
-import org.apache.commons.configuration.ConfigurationException;
 import org.slf4j.Logger;
 
 import com.github.birdgeek.breadbot.BotMain;
@@ -153,15 +152,8 @@ public class ChatEvent extends ListenerAdapter {
 			
 		case "#reload":
 			if (DiscordUtility.isApprovedUser(username)) {
-				ConfigFile.config.reload();
+//				ConfigFile.config.reload();
 				StatsFile.updateCount("reload");				
-				try {
-					
-					ConfigFile.config.load();
-				} catch (ConfigurationException e1) {
-
-					discordLog.warn(e1.getMessage());
-				}
 			}
 			break;
 			
@@ -187,7 +179,7 @@ public class ChatEvent extends ListenerAdapter {
 					e.getChannel().sendMessage("**This is already the home channel!**").queue();
 				}
 				else {
-					ConfigFile.config.setProperty("Home_Channel_ID",  e.getChannel().getId());
+//					ConfigFile.config.setProperty("Home_Channel_ID",  e.getChannel().getId());
 					if (ConfigFile.getHomeChannel().toString().equalsIgnoreCase(e.getChannel().getId())) {
 					e.getChannel().sendMessage("Success! Home channel is now: " + e.getChannel().getName()).queue();
 					discordLog.trace("The owner changed the home channel to: " + e.getChannel().getName());

@@ -12,6 +12,7 @@ public class Service {
 	protected List<String> moderators;
 	protected List<String> ignoredUsers;
 	protected String defaultDiscordRelayChannel;
+	protected String defaultDiscordAnnounceChannel;
 	protected boolean enable;
 	
 	public Service() {
@@ -19,25 +20,20 @@ public class Service {
 	}
 	
 	public Service(JSONObject user, JSONObject settings) {
-		username = (String)user.get("username");
-		if(user.containsKey("password")) {
-			password = (String)user.get("password");
+		username = makeString(user.get("username"));
+		password = makeString(user.get("password"));
+		if(user.containsKey("oauth")) {
+			password = makeString(user.get("oauth"));
 		}
-		else if(user.containsKey("oauth")) {
-			password = (String)user.get("oauth");
-		}
-		defaultDiscordRelayChannel = (String)settings.get("default-discord-relay-channel-id");
-		
-		enable = false;
-		if(settings.containsKey("enable")) {
-			enable = (boolean)settings.get("enable");
-		}
+		defaultDiscordRelayChannel = makeString(settings.get("default-discord-relay-channel-id"));
+		defaultDiscordAnnounceChannel = makeString(settings.get("default-discord-announce-channel-id"));
+		enable = makeBoolean(settings.get("enable"));
 		
 		moderators = makeList((JSONArray)settings.get("moderators"));
 		ignoredUsers = makeList((JSONArray)settings.get("ignored-users"));
 	}
 	
-	protected List<String> makeList(JSONArray j) {
+	protected static List<String> makeList(JSONArray j) {
 		List<String> r = new ArrayList<String>();
 		if(j == null)
 			return r;
@@ -46,6 +42,18 @@ public class Service {
 			r.add((String)o);
 		}
 		return r;
+	}
+	
+	protected static String makeString(Object j) {
+		if(j != null)
+			return (String)j;
+		return "";
+	}
+	
+	protected static boolean makeBoolean(Object j) {
+		if(j != null)
+			return (boolean)j;
+		return false;
 	}
 	
 	public String getUsername() {
@@ -60,6 +68,10 @@ public class Service {
 		return defaultDiscordRelayChannel;
 	}
 	
+	public String getDefaultDiscordAnnounceChannel() {
+		return defaultDiscordAnnounceChannel;
+	}
+	
 	public boolean isEnabled() {
 		return enable;
 	}
@@ -70,5 +82,9 @@ public class Service {
 	
 	public List<String> getIgnoredUsers() {
 		return ignoredUsers;
+	}
+	
+	public String toString() {
+		return "Name: " + username + "\nPassword: " + password + "\nModerators: " + moderators.toString() + "\nIgnored Users: " + ignoredUsers.toString() + "\nDefault Discord Relay Channel: " + defaultDiscordRelayChannel + "\nDefault Discord Announce Channel: " + defaultDiscordAnnounceChannel + "\nEnable: " + enable;
 	}
 }

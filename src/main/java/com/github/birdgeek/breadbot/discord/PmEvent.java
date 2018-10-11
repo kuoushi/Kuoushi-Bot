@@ -42,12 +42,12 @@ public class PmEvent extends ListenerAdapter {
 						
 						case "toggleirc": //Toggle the IRC Relay
 							boolean relay = !ConfigFile.shouldIrcRelay();
-							ConfigFile.config.setProperty("IRC_Relay", relay);
+//							ConfigFile.config.setProperty("IRC_Relay", relay);
 							e.getChannel().sendMessage("IRC Relay is now = " + relay).queue();
 							break;
 							
 						case "+user":
-							ArrayList<String> users = new ArrayList<String>(Arrays.asList(ConfigFile.config.getStringArray("Approved_Users")));
+/*							ArrayList<String> users = new ArrayList<String>(Arrays.asList(ConfigFile.config.getStringArray("Approved_Users")));
 							String testUser = configEditCmd[3];
 							
 							for (int i=0; i< configEditCmd[3].split(",").length; i++) {
@@ -63,14 +63,14 @@ public class PmEvent extends ListenerAdapter {
 							else {
 								discordLog.warn("Failed to find new user in approved string array");
 								e.getChannel().sendMessage("It failed the test - read console output for more").queue();
-							}
+							}*/
 							break;
 						}
 					}
 
 					if (configEditCmd[0].equalsIgnoreCase("relayValue")) { //DEBUG "Config:relayValue:[ConfigKey]"
 						discordLog.debug("Told to relay value of: " + configEditCmd[1]);
-						e.getChannel().sendMessage(ConfigFile.config.getProperty(configEditCmd[1]).toString()).queue();
+//						e.getChannel().sendMessage(ConfigFile.config.getProperty(configEditCmd[1]).toString()).queue();
 					}
 					//Some other second string
 					break;

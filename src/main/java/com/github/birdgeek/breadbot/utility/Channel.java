@@ -116,4 +116,8 @@ public class Channel {
 		return imageRepeat;
 	}
 	
+	public String toString() {
+		return "Name: " + name + "\nService: " + service + "\nRelay: " + relay + "\nAnnounce: " + announce + "\nRelay Channel: " + relayChannel + "\nAnnounce Channel: " + announceChannel + "\nImage Repeat: " + imageRepeat;
+	}
+	
 }

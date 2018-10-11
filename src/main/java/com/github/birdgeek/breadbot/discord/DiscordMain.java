@@ -33,7 +33,7 @@ public class DiscordMain {
 				.setGame(Game.of("KuoushiBot v" + ConfigFile.getVersion()))
 				.buildBlocking();
 		}
-		catch (LoginException | IllegalArgumentException | ConfigurationException | InterruptedException | RateLimitedException e) {
+		catch (LoginException | IllegalArgumentException | InterruptedException | RateLimitedException e) {
 			discordLog.error(e.getMessage());
 		} //Builds the discord bot - Blocks everything until API is ready
 	

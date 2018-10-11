@@ -24,8 +24,8 @@ public class ChatListener extends ListenerAdapter {
 		 * Toggle between IRC relay on/off - Must be approved User
 		 */
 			if (e.getMessage().equalsIgnoreCase("#toggle") && IrcUtility.isApprovedUser(e.getUser().getNick())) {
-				boolean relay = ConfigFile.shouldIrcRelay();
-				ConfigFile.setIrcRelay(!relay);
+//				boolean relay = ConfigFile.shouldIrcRelay();
+//				ConfigFile.setIrcRelay(!relay);
 				e.respondChannel("Now doing relay = " + IrcUtility.isDoingRelay()); //Working
 				IrcMain.ircLog.info("Relay is now: " + IrcUtility.isDoingRelay());
 			}

@@ -12,12 +12,12 @@ public class DiscordService extends Service {
 	
 	public DiscordService(JSONObject user, JSONObject settings) {
 		super(user,settings);
-		token = (String)user.get("token");
-		serverId = (String)settings.get("server-id");
-		ownerId = (String)settings.get("owner-id");
-		channelId = (String)settings.get("home-channel-id");
-		sendWelcome = (boolean)settings.get("send-welcome");
-		enableDelete = (boolean)settings.get("enable-delete");
+		token = makeString(user.get("token"));
+		serverId = makeString(settings.get("server-id"));
+		ownerId = makeString(settings.get("owner-id"));
+		channelId = makeString(settings.get("home-channel-id"));
+		sendWelcome = makeBoolean(settings.get("send-welcome"));
+		enableDelete = makeBoolean(settings.get("enable-delete"));
 	}
 	
 	public String getToken() {
@@ -42,5 +42,10 @@ public class DiscordService extends Service {
 	
 	public boolean isDeleteEnabled() {
 		return enableDelete;
+	}
+	
+	public String toString() {
+		String temp = super.toString();
+		return temp + "\nToken: " + token + "\nServer ID: " + serverId + "\nOwner ID: " + ownerId + "\nChannel ID: " + channelId + "\nSend Welcome: " + sendWelcome + "\nEnable Delete: " + enableDelete;
 	}
 }
