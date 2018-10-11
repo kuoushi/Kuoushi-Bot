@@ -1,14 +1,16 @@
 /target/
-.idea/
 password.txt
 Discord bot.jar
 myConfig.cfg
 myStats.cfg
-.idea
-.iml
 *.class
 tokens.json
+config.cfg
+config.json
+stats.cfg
 Built/
+.git/
+logs/
 
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/
