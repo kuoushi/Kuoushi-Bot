@@ -1,0 +1,66 @@
+{
+	"version":"0.2.0",
+	"login":{
+		"discord":{
+			"username":"username@email.com",
+			"password":"password",
+			"token":"bot token"
+		},
+		"twitch":{
+			"username":"username",
+			"oauth":"oauth token"
+		},
+		"hitbox":{
+			"username":"username",
+			"password":"password"
+		}
+	},
+	"discord-settings":{
+		"owner-id":"long string of numbers representing owner's ID on Discord",
+		"server-id":"long string of numbers representing server's ID on Discord",
+		"home-channel-id":"long string of numbers representing main channel's ID on Discord",
+		"moderators":["moderator name","moderator name 2"],
+		"send-welcome":true,
+		"enable-delete":false
+	},
+	"twitch-settings":{
+		"enable":true,
+		"moderators":["moderator name","moderator name 2"],
+		"ignored-users":[],
+		"default-discord-relay-channel-id":"long string of numbers representing channel on Discord to relay text to"
+	},
+	"hitbox-settings":{
+		"enable":false,
+		"moderators":["moderator name","moderator name 2"],
+		"ignored-users":[],
+		"default-discord-relay-channel-id":"long string of numbers representing channel on Discord to relay text to"
+	},
+	"hlds-settings":{
+		"enable":false,
+		"servers":[
+			{
+				"ip":"127.0.0.1:27015",
+				"type":"hlds",
+				"rcon":"rcon password"
+			}
+		],
+		"moderators":["moderator"],
+		"ignored-users":[],
+		"default-discord-relay-channel-id":"long string of numbers representing channel on Discord to relay text to"
+	},
+	"channels":[
+		{
+			"username":"channel name",
+			"service":"twitch",
+			"relay":true,
+			"announce":true
+		},
+		{
+			"username":"channel name",
+			"service":"hitbox",
+			"relay":true,
+			"announce":true,
+			"image-repeat":false
+		}
+	]
+}
