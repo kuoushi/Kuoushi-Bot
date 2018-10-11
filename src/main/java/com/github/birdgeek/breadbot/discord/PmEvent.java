@@ -3,15 +3,14 @@ package com.github.birdgeek.breadbot.discord;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import org.apache.commons.configuration.ConfigurationException;
 import org.slf4j.Logger;
 
 import com.github.birdgeek.breadbot.utility.ConfigFile;
 import com.github.birdgeek.breadbot.utility.DiscordUtility;
 import com.github.birdgeek.breadbot.utility.StatsFile;
 
-import net.dv8tion.jda.events.message.priv.PrivateMessageReceivedEvent;
-import net.dv8tion.jda.hooks.ListenerAdapter;
+import net.dv8tion.jda.core.events.message.priv.PrivateMessageReceivedEvent;
+import net.dv8tion.jda.core.hooks.ListenerAdapter;
 
 public class PmEvent extends ListenerAdapter {
 	
@@ -21,7 +20,7 @@ public class PmEvent extends ListenerAdapter {
 		this.discordLog = log;
 	}
 	
-	public void onPrivateMessageReceived(PrivateMessageReceivedEvent e) { //FIXME Must go about this the same way Google command is done
+	public void onPrivateMessageReceived(PrivateMessageReceivedEvent e) {
 			if (e.getAuthor().getId().equalsIgnoreCase(ConfigFile.getOwnerID())) { //Only owner can change the bot from PMS
 
 				discordLog.trace("Got PM from Owner");
@@ -32,10 +31,10 @@ public class PmEvent extends ListenerAdapter {
 					StatsFile.updateCount("stats");
 					break;
 					
-					//FIXME It doesnt work like this
+					//TODO Test this config editing
 				case "#config": //Edit the config from discord PM's
 					String[] configEditCmd = e.getMessage().getContent().substring(7).split(":"); 
-					//each part of the editing processMessage needs to be
+					//each part of the editing process needs to be
 					//split up by ":"
 					if (configEditCmd[0].equalsIgnoreCase("edit")) {
 
@@ -44,12 +43,7 @@ public class PmEvent extends ListenerAdapter {
 						case "toggleirc": //Toggle the IRC Relay
 							boolean relay = !ConfigFile.shouldIrcRelay();
 							ConfigFile.config.setProperty("IRC_Relay", relay);
-							try {
-								ConfigFile.config.save();
-							} catch (ConfigurationException e1) {
-								discordLog.error(e1.getMessage());
-							}
-							e.getChannel().sendMessage("IRC Relay is now = " + relay);
+							e.getChannel().sendMessage("IRC Relay is now = " + relay).queue();
 							break;
 							
 						case "+user":
@@ -60,17 +54,15 @@ public class PmEvent extends ListenerAdapter {
 								users.add(configEditCmd[3].split(",")[i]);
 								discordLog.trace("Trying to update Approved Users");
 							}
-							ConfigFile.config.setProperty("Approved_Users", users);
-							ConfigFile.save();
 							//DEBUG Runs the test right after update
 							if (DiscordUtility.isApprovedUser(testUser)) {
 								discordLog.trace("Success in Updating Approved Users");
 								discordLog.info("Users are now: " + ConfigFile.getApprovedUsers());
-								e.getChannel().sendMessage("Update Success!");
+								e.getChannel().sendMessage("Update Success!").queue();
 							}
 							else {
 								discordLog.warn("Failed to find new user in approved string array");
-								e.getChannel().sendMessage("It failed the test - read console output for more");
+								e.getChannel().sendMessage("It failed the test - read console output for more").queue();
 							}
 							break;
 						}
@@ -78,7 +70,7 @@ public class PmEvent extends ListenerAdapter {
 
 					if (configEditCmd[0].equalsIgnoreCase("relayValue")) { //DEBUG "Config:relayValue:[ConfigKey]"
 						discordLog.debug("Told to relay value of: " + configEditCmd[1]);
-						e.getChannel().sendMessage(ConfigFile.config.getProperty(configEditCmd[1]).toString());
+						e.getChannel().sendMessage(ConfigFile.config.getProperty(configEditCmd[1]).toString()).queue();
 					}
 					//Some other second string
 					break;
@@ -88,8 +80,8 @@ public class PmEvent extends ListenerAdapter {
 					break;
 				}
 			}
-			else if (!e.getAuthor().getId().equalsIgnoreCase(DiscordMain.botID)) {
-				e.getChannel().sendMessage("Sorry something went wrong!");
+			else {
+				e.getChannel().sendMessage("Sorry something went wrong!").queue();
 			}
 
 		}

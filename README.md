@@ -12,7 +12,7 @@ the next few months and will eventually release beta builds when I feel it can b
 	- ~~IRC Bridge~~
 	- Voice
 	- Music Player
-	- ~~Coin Flip~~
+	- Coin Flip
 	- Config editing in discord
 	- League Intergration
 - ~~Stats page~~
@@ -20,11 +20,14 @@ the next few months and will eventually release beta builds when I feel it can b
 - IRC 
 	- Ignore certain users (potentially useful for bots)
 	- Run twitch cmds from discord
+- GUI
+	- Config File editing within GUI
+	- Stats page to display all cmd stats
 
 ## Installation
 
 ###### Current Version: [0.0.6](https://github.com/Birdgeek/BreadBot/releases/tag/0.0.6)
-###### InDev Version: [0.0.7](https://github.com/Birdgeek/BreadBot/tree/develop)
+###### InDev Version: [TBA](https://github.com/Birdgeek/BreadBot)
 
 
 

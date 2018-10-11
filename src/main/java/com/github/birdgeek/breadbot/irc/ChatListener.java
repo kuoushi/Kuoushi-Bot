@@ -4,6 +4,8 @@ import org.pircbotx.hooks.ListenerAdapter;
 import org.pircbotx.hooks.events.MessageEvent;
 
 import com.github.birdgeek.breadbot.discord.DiscordMain;
+import com.github.birdgeek.breadbot.hlds.HLDSMain;
+import com.github.birdgeek.breadbot.notifiers.TwitchNotifiers;
 import com.github.birdgeek.breadbot.utility.ConfigFile;
 import com.github.birdgeek.breadbot.utility.IrcUtility;
 
@@ -17,7 +19,7 @@ public class ChatListener extends ListenerAdapter {
 	 */
 	public void onMessage(MessageEvent e) {
 		
-		if (!IrcUtility.isIgnored(e.getUser().getNick())) {
+		if (!IrcUtility.isIgnored(e.getUser().getNick()) && !e.getUser().getNick().equalsIgnoreCase(IrcMain.irc.getNick())) {
 		/*
 		 * Toggle between IRC relay on/off - Must be approved User
 		 */
@@ -33,13 +35,21 @@ public class ChatListener extends ListenerAdapter {
 		 */
 			if (IrcUtility.isDoingRelay()) {
 				if (!IrcUtility.isCommand(e)) {
-					DiscordMain.jda.getTextChannelById(ConfigFile.getTwitchDiscordChannelID())
-					.sendMessage(
-							"{**" + e.getChannel().getName() + "**}" +
-							" [*" + e.getUser().getNick() + "*] " + 
-							e.getMessage());
+					if(IrcMain.channels.contains(e.getChannel().getName().substring(1))) {
+						try {
+							DiscordMain.jda.getTextChannelById(ConfigFile.getTwitchDiscordChannelID())
+							.sendMessage(
+									"{**" + e.getChannel().getName() + "**}" +
+								    " [*" + e.getUser().getNick() + "*] " + 
+								    e.getMessage()).queue();
+						}
+						catch (Exception ex) {
+							IrcMain.ircLog.info("Error sending message to Discord: " + ex.toString());
+						}
+						HLDSMain.sendMessage("{Twitch} [" + e.getUser().getNick() + "] " + e.getMessage(),e.getChannel().getName().replace("#",""));
+					}
 				}	
 			}
 		}
 	}
-	}
+}

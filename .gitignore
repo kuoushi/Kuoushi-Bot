@@ -8,6 +8,8 @@ tokens.json
 config.cfg
 config.json
 stats.cfg
+*.cfg
+*.json
 Built/
 .git/
 logs/

@@ -2,55 +2,43 @@ package com.github.birdgeek.breadbot.discord;
 
 import javax.security.auth.login.LoginException;
 
-import com.github.birdgeek.breadbot.BotMain;
-import com.github.birdgeek.breadbot.utility.IrcUtility;
-import net.dv8tion.jda.utils.SimpleLog;
+import org.apache.commons.configuration.ConfigurationException;
+import org.slf4j.Logger;
 
 import com.github.birdgeek.breadbot.utility.ConfigFile;
 import com.github.birdgeek.breadbot.utility.DiscordUtility;
 
-import net.dv8tion.jda.JDA;
-import net.dv8tion.jda.JDABuilder;
-import net.dv8tion.jda.MessageBuilder;
+import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.core.JDABuilder;
+import net.dv8tion.jda.core.MessageBuilder;
+import net.dv8tion.jda.core.entities.Game;
+import net.dv8tion.jda.core.exceptions.RateLimitedException;
+import net.dv8tion.jda.core.AccountType;
 
 public class DiscordMain {
 	
 	public static JDA jda;
-	public static SimpleLog discordLog;
-	static String botID;
-	static char callsign;
-	public static String homeChannel;
-	public static String homeGuild;
-    static boolean supressed = true;
+	static Logger discordLog;
 	
-	public static void setup(SimpleLog log) {
+	public static void setup(Logger log) {
 		discordLog = log;
-        discordLog.setLevel(SimpleLog.Level.ALL);
-
+	
 		try {
-			jda = new JDABuilder()
-				.setBotToken(ConfigFile.getBotToken())
-				.addListener(new GuildMessageListener()) //Pass API and Specific Logger
-				.addListener(new PrivateMessageListener())
-				.addListener(new MemberJoinEvent())
-				.addListener(new Eval())
+			jda = new JDABuilder(AccountType.BOT)
+				.setToken(ConfigFile.getBotToken())
+				.addEventListener(new ChatEvent(jda, discordLog)) //Pass API and Specific Logger
+				.addEventListener(new InviteEvent()) 
+				.addEventListener(new DiscordToTwitchEvent())
+				.addEventListener(new PmEvent(discordLog)) //Passes Logger
+				.setGame(Game.of("KuoushiBot v" + ConfigFile.getVersion()))
 				.buildBlocking();
-		} catch (LoginException | IllegalArgumentException | InterruptedException e) {
-		discordLog.fatal(e.getMessage());
+		}
+		catch (LoginException | IllegalArgumentException | ConfigurationException | InterruptedException | RateLimitedException e) {
+			discordLog.error(e.getMessage());
 		} //Builds the discord bot - Blocks everything until API is ready
 	
-		jda.getAccountManager().setGame("Breadbot V: " + BotMain.version);
-		new DiscordUtility(DiscordMain.jda, discordLog); //Setup for Util class - passes JDA and Logger	
-		botID = jda.getSelfInfo().getId();
-		callsign = ConfigFile.getCallsign();
-		homeChannel = ConfigFile.getHomeChannel();
-		homeGuild = ConfigFile.getHomeGuild();
-
-        if (!supressed)
-            sendWelcome();
-
-        if (IrcUtility.isDoingRelay())
-            jda.addEventListener(new DiscordToTwitchEvent());
+		new DiscordUtility(DiscordMain.jda, discordLog); //Setup for Util class - passes JDA and Logger		
+		sendWelcome();
 	}
 	
 	/*
@@ -58,14 +46,19 @@ public class DiscordMain {
 	 */
 	public static void sendWelcome() {
 		
-		jda.getTextChannelById(DiscordMain.homeChannel).sendMessage( //DEBUG this sends NPE OFTEN
+		jda.getTextChannelById(ConfigFile.getHomeChannel()).sendMessage(
 				new MessageBuilder()
-						.appendString("*Hello World!* :bread: :robot:")
-						.appendCodeBlock("[Welcome to Bread Bot!] \n\n"
-							+ "[Version][" + BotMain.version +"]\n"
-						, "MD")
-						.appendString("You can read more about me here - http://birdgeek.github.io/BreadBot/")
-				.build());
+				.appendCodeBlock("Kuoushi Bot is now active! \n"
+						+ "Version: " + ConfigFile.getVersion()
+						, "python")
+				.build()).queue();
+		
+		if (ConfigFile.shouldSendWelcomeMention()) { //Should we mention the Owner
+			jda.getTextChannelById("" + ConfigFile.getHomeChannel()).sendMessage(new MessageBuilder()
+					.append("I am being run by ")
+					.append(jda.getUserById("" + ConfigFile.getOwnerID()).getAsMention())
+					.build()).queue();
+		}
 	}
 	
 }

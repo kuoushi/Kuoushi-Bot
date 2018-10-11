@@ -11,8 +11,6 @@
 #reload - 'Will reload the config.cfg file'
 #debug - 'Outputs a bunch of stuff only useful to me'
 #attach - '(Owner Only) Will change the home channel to the current text channel'
-#g [query] - Will return the top result of your search query
-#gs [query] - Wil lreturn the results page of your query (Opens google results)
 
 Some Commands can be done only through private Messages:
 #config - 'Used to edit or read the values of the config'

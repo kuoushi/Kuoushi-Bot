@@ -10,14 +10,9 @@ public class IrcUtility extends ListenerAdapter  {
 	static String[] ircCommands = {"help", "toggle"};
 	
 	public IrcUtility() {
-		targetChannel = "#" + ConfigFile.getTwitchChannel().replace("#", "");
+		targetChannel = "#" + ConfigFile.getTwitchChannel();
 	}
-	
-	/**
-	 * Check to see if user is on ignored list
-	 * @param String of user checking for ignored
-	 * @return t/f depending on if user is ignored
-	 */
+
 	public static boolean isIgnored(String nick) {
 		String[] ignoredUsers = ConfigFile.getIgnoredIrcUsers();
 		
@@ -25,19 +20,16 @@ public class IrcUtility extends ListenerAdapter  {
 			if (ignoredUsers[i].equalsIgnoreCase(nick))
 				return true;
 		}
+		
 		return false;
 	}
 
-	/**
-	 * 
-	 * @param messageEvent
-	 * @return t/f depending on if the line read is a cmd
-	 */
-	public static boolean isCommand(MessageEvent messageEvent) {
+	//Should we relay the command?
+	public static boolean isCommand(MessageEvent e) {
 		
 		for (String ircCommand : ircCommands) {
 			
-			if (messageEvent.getMessage().equalsIgnoreCase(ircCommand)) {
+			if (e.getMessage().equalsIgnoreCase(ircCommand)) {
 				return true;
 			}
 			else {
@@ -47,22 +39,19 @@ public class IrcUtility extends ListenerAdapter  {
 		return false;
 	}
 	
-	/**
-	 * 
-	 * @return Should we be doing the relay?
+	/*
+	 * Should we be relaying the IRC chat to the discord channel?
 	 */
 	public static boolean isDoingRelay() {
 		return ConfigFile.shouldIrcRelay();
 	}
 
-	public static boolean verbrose() { return ConfigFile.isVerbrose(); }
-
-	/**
-	 * @return Method for finding is a specific user is admin on Bot
+	/*
+	 * Method for finding is a specific user is admin on Bot
 	 */
 	public static boolean isApprovedUser(String username) {
-		for (int i = 0; i < ConfigFile.getapprovedIrcusers().length; i++) {
-			if (username.equalsIgnoreCase(ConfigFile.getapprovedIrcusers()[i])) {
+		for (int i=0; i < ConfigFile.getApprovedIRCUsers().length; i++) {
+			if (username.equalsIgnoreCase(ConfigFile.getApprovedIRCUsers()[i])) {
 				return true;
 			}
 		}

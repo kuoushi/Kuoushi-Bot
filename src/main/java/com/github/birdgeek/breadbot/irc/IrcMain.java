@@ -1,60 +1,50 @@
 package com.github.birdgeek.breadbot.irc;
 
-import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
-import net.dv8tion.jda.utils.SimpleLog;
 import org.pircbotx.Configuration;
 import org.pircbotx.PircBotX;
-import org.pircbotx.exception.IrcException;
+import org.pircbotx.output.OutputIRC;
+import org.slf4j.Logger;
 
 import com.github.birdgeek.breadbot.utility.ConfigFile;
 
 public class IrcMain {
 	public static PircBotX irc;
-	static SimpleLog ircLog;
-	public static boolean isRunning;
+	static Logger ircLog;
+	public static List<String> channels;
+	static OutputIRC output;
+	private static IrcThread threaded;
 	
 	
 	/*
 	 * Main method for creation of IRC Bot
 	 */
-	public static void setup(SimpleLog log) {
+	public static void setup(Logger log) {
 		ircLog = log;
+		channels = new ArrayList<String>();
 		
-		Configuration config = new Configuration.Builder()
+		/*Configuration config = new Configuration.Builder()
 				.setName(ConfigFile.getTwitchLoginUser())
 				.addServer("irc.twitch.tv", 6667)
 				.setServerPassword(ConfigFile.getOAuth())
-				.addAutoJoinChannel("#" + ConfigFile.getTwitchChannel().replace("#", ""))
 				.addListener(new ChatListener())
 				.buildConfiguration();
 				
-		irc = new PircBotX(config);
-		try {
-			irc.startBot();
-			isRunning = true;
-		} catch (IOException | IrcException e) {
-			ircLog.fatal(e.getMessage());
-			isRunning = false;
-			
-		}
+		irc = new PircBotX(config);*/
+		
+		threaded = new IrcThread();
+		threaded.start();
+	}
 
-	}
-	
-	/*
-	 * Debug main method for running just the IRC Bot (Should never be used)
-	 */
-	public static void main(String[] args) {
-		ircLog = SimpleLog.getLog("IRC");
-		setup(ircLog);
-	}
 	public static boolean shouldEnable() {
-		return ConfigFile.shouldEnableIrc();
+		return ConfigFile.shouldEnableTwitch();
 	}
 	
 	public static void kill() {
 		ircLog.trace("Trying to close IRC connection");
-		irc.close();
+		output.quitServer();
 		
 		if (!irc.isConnected()) 
 			ircLog.trace("Succesfully closed IRC connection");
@@ -64,8 +54,25 @@ public class IrcMain {
 	}
 	
 	public static void sendMessage(String contents) {
-
-		irc.sendRaw().rawLine("PRIVMSG #" + ConfigFile.getTwitchChannel().replace("#", "") +" :" + contents);
+		if(channels != null) {
+			for(String a : channels) {
+				IrcMain.sendMessage(contents,a);
+			}
+		}
+	}
+	
+	public static void sendMessage(String contents, String channel) {
+		irc.sendRaw().rawLine("PRIVMSG #" + channel +" :" + contents);
+	}
+	
+	public static void joinChannel(String contents) {
+		channels.add(contents);
+		irc.sendRaw().rawLine("JOIN #" + contents);
+	}
+	
+	public static void partChannel(String contents) {
+		channels.remove(channels.indexOf(contents));
+		irc.sendRaw().rawLine("PART #" + contents);
 	}
 
 }

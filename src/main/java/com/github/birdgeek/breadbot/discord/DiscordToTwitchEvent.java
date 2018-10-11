@@ -1,11 +1,12 @@
 package com.github.birdgeek.breadbot.discord;
 
 import com.github.birdgeek.breadbot.BotMain;
+import com.github.birdgeek.breadbot.hitbox.HitboxMain;
+import com.github.birdgeek.breadbot.hlds.HLDSMain;
 import com.github.birdgeek.breadbot.irc.IrcMain;
 import com.github.birdgeek.breadbot.utility.ConfigFile;
-import com.github.birdgeek.breadbot.utility.IrcUtility;
-import net.dv8tion.jda.events.message.guild.GuildMessageReceivedEvent;
-import net.dv8tion.jda.hooks.ListenerAdapter;
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.core.hooks.ListenerAdapter;
 
 public class DiscordToTwitchEvent extends ListenerAdapter {
 	
@@ -14,25 +15,36 @@ public class DiscordToTwitchEvent extends ListenerAdapter {
 	}
 	
 	public void onGuildMessageReceived(GuildMessageReceivedEvent e) {
-		if (e.getChannel().getId().equalsIgnoreCase(ConfigFile.getTwitchDiscordChannelID())) {
-			if (IrcMain.isRunning) {
-				if (!IrcUtility.verbrose()) {
-					if (e.getMessage().getContent().charAt(0) == '^') {
-						if (e.getAuthor().getId().equalsIgnoreCase(ConfigFile.getOwnerID())) {
 
-							String contents = e.getMessage().getContent().substring(1);
-							IrcMain.sendMessage(contents);
-							BotMain.systemLog.trace("Should have sent: " + contents);
-						} else {
-							BotMain.discordLog.warn("Failed owner");
-						}
-					}
-				} else {
-					IrcMain.sendMessage(e.getMessage().getContent());
+		if (e.getChannel().getId().equalsIgnoreCase(ConfigFile.getTwitchDiscordChannelID())) {
+			if(!e.getAuthor().getId().equalsIgnoreCase(DiscordMain.jda.getSelfUser().getId()) && !e.getMessage().getContent().startsWith("#")) {
+				DiscordMain.discordLog.info("[" + e.getAuthor().getName() + "] " + e.getMessage().getContent());
+				String contents = "{Discord} [" + e.getAuthor().getName() + "] " + e.getMessage().getContent();
+				
+				
+				try {
+					IrcMain.sendMessage(contents);
 				}
-			} else {
-				BotMain.ircLog.warn("IRC Portion is not running!");
+				catch (Exception ex){
+					DiscordMain.discordLog.info("Error sending message to IRC: " + ex.toString());
+				}
+				
+				try {
+					HitboxMain.sendMessage(contents);
+				}
+				catch (Exception ex){
+					DiscordMain.discordLog.info("Error sending message to Hitbox: " + ex.toString());
+				}
+				
+				try {
+					HLDSMain.sendMessage(contents);
+				}
+				catch (Exception ex) {
+					DiscordMain.discordLog.info("Error sending message to HLDS: " + ex.toString());
+				}
+				
+				BotMain.systemLog.trace("Should have sent: " + contents);
 			}
-		}
+		}		
 	}
 }
