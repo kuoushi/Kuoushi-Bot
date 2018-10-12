@@ -3,7 +3,6 @@ package com.github.birdgeek.breadbot.irc;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.pircbotx.Configuration;
 import org.pircbotx.PircBotX;
 import org.pircbotx.output.OutputIRC;
 import org.slf4j.Logger;
@@ -25,21 +24,12 @@ public class IrcMain {
 		ircLog = log;
 		channels = new ArrayList<String>();
 		
-		/*Configuration config = new Configuration.Builder()
-				.setName(ConfigFile.getTwitchLoginUser())
-				.addServer("irc.twitch.tv", 6667)
-				.setServerPassword(ConfigFile.getOAuth())
-				.addListener(new ChatListener())
-				.buildConfiguration();
-				
-		irc = new PircBotX(config);*/
-		
 		threaded = new IrcThread();
 		threaded.start();
 	}
 
 	public static boolean shouldEnable() {
-		return ConfigFile.shouldEnableTwitch();
+		return ConfigFile.isServiceEnabled("twitch");
 	}
 	
 	public static void kill() {

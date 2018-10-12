@@ -3,6 +3,7 @@ package com.github.birdgeek.breadbot.notifiers;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.List;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -28,7 +29,7 @@ public class HitboxNotifiers implements Runnable {
 		keepGoing = true;
 		pollTime = i;
 		
-		String[] channels = ConfigFile.getHitboxChannel().split(",");
+		List<String> channels = ConfigFile.getHitboxChannels();
 		for(String channel : channels) {
 			JSONObject temp = new JSONObject();
 			temp.put("media_name", channel);
@@ -67,7 +68,7 @@ public class HitboxNotifiers implements Runnable {
 		
 		JSONArray arr;
 		try {
-			arr = Hitbox.getMedia(ConfigFile.getHitboxChannel());
+			arr = Hitbox.getMedia(ConfigFile.getHitboxChannels());
 			if(arr != null) {
 				for(int i = 0; i < arr.length(); i++) {
 					JSONObject curr = arr.getJSONObject(i);

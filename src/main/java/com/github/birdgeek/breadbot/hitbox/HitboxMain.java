@@ -1,6 +1,7 @@
 package com.github.birdgeek.breadbot.hitbox;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -24,7 +25,7 @@ public class HitboxMain {
 		hitboxchatLog = log;
 //		channels = new HashMap<String,HitboxChatListener>();
 		
-		String[] chans = ConfigFile.getHitboxChannel().split(",");
+		List<String> chans = ConfigFile.getHitboxChannels();
 		Map<String,HitboxChatListener> temp = new HashMap<String,HitboxChatListener>();
 		
 		for(String channel : chans) {

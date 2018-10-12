@@ -10,6 +10,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.Charset;
+import java.util.List;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -24,7 +25,7 @@ public class Hitbox {
 
 	} */
 	
-	public static JSONArray getMedia(String channels) throws IOException {
+	public static JSONArray getMedia(List<String> channels) throws IOException {
 		JSONObject rdr = readJsonFromUrl(apiUrl + "media/live/" + channels);
 		JSONArray r = null;
 		

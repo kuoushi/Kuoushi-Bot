@@ -1,10 +1,7 @@
 package com.github.birdgeek.breadbot.irc;
 
-import java.io.IOException;
-
 import org.pircbotx.Configuration;
 import org.pircbotx.PircBotX;
-import org.pircbotx.exception.IrcException;
 import org.pircbotx.output.OutputIRC;
 
 import com.github.birdgeek.breadbot.utility.ConfigFile;

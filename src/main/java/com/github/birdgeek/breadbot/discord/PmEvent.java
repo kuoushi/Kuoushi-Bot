@@ -41,9 +41,9 @@ public class PmEvent extends ListenerAdapter {
 						switch (configEditCmd[1]) { //DEBUG "config:edit:toggleirc
 						
 						case "toggleirc": //Toggle the IRC Relay
-							boolean relay = !ConfigFile.shouldIrcRelay();
+//							boolean relay = !ConfigFile.shouldIrcRelay();
 //							ConfigFile.config.setProperty("IRC_Relay", relay);
-							e.getChannel().sendMessage("IRC Relay is now = " + relay).queue();
+//							e.getChannel().sendMessage("IRC Relay is now = " + relay).queue();
 							break;
 							
 						case "+user":

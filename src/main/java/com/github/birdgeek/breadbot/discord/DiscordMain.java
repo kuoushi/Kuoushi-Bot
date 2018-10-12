@@ -2,11 +2,9 @@ package com.github.birdgeek.breadbot.discord;
 
 import javax.security.auth.login.LoginException;
 
-import org.apache.commons.configuration.ConfigurationException;
 import org.slf4j.Logger;
 
 import com.github.birdgeek.breadbot.utility.ConfigFile;
-import com.github.birdgeek.breadbot.utility.DiscordUtility;
 
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;
@@ -35,9 +33,7 @@ public class DiscordMain {
 		}
 		catch (LoginException | IllegalArgumentException | InterruptedException | RateLimitedException e) {
 			discordLog.error(e.getMessage());
-		} //Builds the discord bot - Blocks everything until API is ready
-	
-		new DiscordUtility(DiscordMain.jda, discordLog); //Setup for Util class - passes JDA and Logger		
+		} //Builds the discord bot - Blocks everything until API is ready	
 		sendWelcome();
 	}
 	

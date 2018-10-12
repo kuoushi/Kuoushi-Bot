@@ -10,7 +10,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 public class ConfigFile {
-	static String filename = "config.cfg"; //TODO Set this different for releases
+	static String filename = "config.json"; //TODO Set this different for releases
 	private static List<Channel> channels;
 	private static Service twitch;
 	private static Service hitbox;
@@ -24,7 +24,7 @@ public class ConfigFile {
 		JSONObject jsconfig = new JSONObject();
 		
 		try {
-			jsconfig = (JSONObject) parser.parse(new FileReader("config.json"));
+			jsconfig = (JSONObject) parser.parse(new FileReader(filename));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -69,44 +69,81 @@ public class ConfigFile {
 	}
 	
 	/*
-	 * String Arrays
+	 * General Functions
 	 */
-	public static String[] getApprovedUsers() {
-		String[] build = new String[discord.getModerators().size()];
-		for(int i = 0; i < discord.getModerators().size(); i++) {
-			build[i] = discord.getModerators().get(i);
-		}
-		return build;
+	
+	public static String getVersion() {
+		return version;
 	}
 	
-	public static String[] getApprovedIRCUsers() {
-		String[] build = new String[twitch.getModerators().size()];
-		for(int i = 0; i < twitch.getModerators().size(); i++) {
-			build[i] = twitch.getModerators().get(i);
-		}
-		return build;
+	private static Service getService(String s) {
+		if(s.equalsIgnoreCase("discord"))
+			return discord;
+		else if (s.equalsIgnoreCase("twitch"))
+			return twitch;
+		else if(s.equalsIgnoreCase("hitbox"))
+			return hitbox;
+		else
+			return servers;
 	}
 	
-	public static String[] getIgnoredIrcUsers() {
-		String[] build = new String[twitch.getIgnoredUsers().size()];
-		for(int i = 0; i < twitch.getIgnoredUsers().size(); i++) {
-			build[i] = twitch.getIgnoredUsers().get(i);
-		}
-		return build;
+	public static String getUsername(String service) {
+		return getService(service).getUsername();
 	}
-	public static String getHitboxRepeaters() {
-		String build = "";
-		for(Channel a : channels) {
-			if(a.getImageRepeat() == true)
-				build += a.getName() + ",";
-		}
-		if(build.length() > 0)
-			build = build.substring(0, build.length() - 1);
-		
-		return build;
+	
+	public static String getPassword(String service) {
+		return getService(service).getPassword();
 	}
+	
+	public static String getRelayChannel(String service) {
+		return getService(service).getDefaultDiscordRelayChannel();
+	}
+	
+	public static String getAnnounceChannel(String service) {
+		return getService(service).getDefaultDiscordAnnounceChannel();
+	}
+	
+	public static boolean isServiceEnabled(String service) {
+		return getService(service).isEnabled();
+	}
+	
+	public static List<String> getModerators(String service) {
+		return getService(service).getModerators();
+	}
+	
+	public static List<String> getIgnoredUsers(String service) {
+		return getService(service).getIgnoredUsers();
+	}
+	
+	public static boolean isIgnoredUser(String user, String service) {
+		List<String> users = getIgnoredUsers(service);
+		for(String u : users) {
+			if(u.equalsIgnoreCase(user))
+				return true;
+		}
+		return false;
+	}
+	
+	public static boolean isModerator(String user, String service) {
+		List<String> users = getModerators(service);
+		for(String u : users) {
+			if(u.equalsIgnoreCase(user))
+				return true;
+		}
+		return false;
+	}
+	
+	public static boolean isRelayEnabled(String channel) {
+		for(Channel c : channels) {
+			if(c.getName().equalsIgnoreCase(channel)) {
+				return c.getRelay();
+			}
+		}
+		return false;
+	}
+	
 	/*
-	 * Strings
+	 * Discord Functions
 	 */
 	public static String getEmail() {
 		return discord.getUsername();
@@ -119,8 +156,65 @@ public class ConfigFile {
 		return discord.getToken();
 	}
 	
-	public static String getVersion() {
-		return version;
+	public static boolean shouldDelete() {
+		return discord.isDeleteEnabled();
+	}
+	
+	public static boolean shouldSendWelcomeMention() {
+		return discord.isWelcomeEnabled();
+	}
+	
+	public static String getHomeGuild() {
+		return discord.getServerId();
+	}
+	
+	public static String getHomeChannel() {
+		return discord.getChannelId();
+	}	
+	
+	public static String getOwnerID() {
+		return discord.getOwnerId();
+	}
+	
+	/*
+	 * Hitbox Functions
+	 */
+	public static String getHitboxLoginUser() {
+		return hitbox.getUsername();
+	}
+	
+	public static String getHitboxLoginPass() {
+		return hitbox.getPassword();
+	}
+	
+	public static List<String> getHitboxChannels() {
+		List<String> build = new ArrayList<String>();
+		for(Channel a : channels) {
+			if(a.getService().equals("hitbox"))
+				build.add(a.getName());
+		}
+		return build;
+	}
+	
+	public static List<String> getHitboxRepeaters() {
+		List<String> build = new ArrayList<String>();
+		for(Channel a : channels) {
+			if(a.getService().equalsIgnoreCase("hitbox") && a.getImageRepeat() == true)
+				build.add(a.getName());
+		}
+		return build;
+	}
+	
+	/*
+	 * Twitch Functions
+	 */
+	
+	public static String getOAuth() {
+		return twitch.getPassword();
+	}
+	
+	public static String getTwitchLoginUser() {
+		return twitch.getUsername();
 	}
 	
 	public static String getTwitchChannel() {
@@ -135,69 +229,21 @@ public class ConfigFile {
 		return build;
 	}
 	
-	public static String getHitboxChannel() {
-		String build = "";
-		for(Channel a : channels) {
-			if(a.getService().equals("hitbox"))
-				build += a.getName() + ",";
-		}
-		if(build.length() > 0)
-			build = build.substring(0, build.length() - 1);
-		
-		return build;
-	}
-	
-	public static String getOAuth() {
-		return twitch.getPassword();
-	}
-	
-	public static String getTwitchLoginUser() {
-		return twitch.getUsername();
-	}
-	
-	public static String getHitboxLoginUser() {
-		return hitbox.getUsername();
-	}
-	public static String getHitboxLoginPass() {
-		return hitbox.getPassword();
-	}
-	
-	/*
-	 * Booleans
-	 */
-	public static boolean shouldEnableTwitch() {
-		return twitch.isEnabled();
-	}
-	
-	public static boolean shouldDelete() {
-		return discord.isDeleteEnabled();
-	}
-	
-	public static boolean shouldSendWelcomeMention() {
-		return discord.isWelcomeEnabled();
-	}	
-	public static boolean shouldIrcRelay() {
-		return twitch.isEnabled();
-	}
-	
-	/*
-	 * Ints
-	 */
-	public static String getHomeGuild() {
-		return discord.getServerId();
-	}
-	
-	public static String getHomeChannel() {
-		return discord.getChannelId();
-	}	
-	
-	public static String getOwnerID() {
-		return discord.getOwnerId();
-	}
-	
 	public static String getTwitchDiscordChannelID() {
 		return twitch.getDefaultDiscordRelayChannel();
 	}
+	
+	public static String getTwitchDiscordChannelID(String channel) {
+		for(Channel c : channels) {
+			if(c.getName().equalsIgnoreCase(channel))
+				return c.getRelayChannel();
+		}
+		return twitch.getDefaultDiscordRelayChannel();
+	}
+	
+	/*
+	 * HLDS
+	 */
 	
 	public static List<Server> getServers() {
 		return servers.getServers();

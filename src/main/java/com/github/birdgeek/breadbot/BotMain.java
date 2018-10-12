@@ -56,18 +56,20 @@ public class BotMain {
 		NotifiersMain.setup(notifiersLog);
 		systemLog.trace("Enabled notifiers");
 		
-		if (ConfigFile.shouldEnableTwitch()) { //Should we enable the IRC portion?
+		if (ConfigFile.isServiceEnabled("twitch")) { //Should we enable the IRC portion?
 			IrcMain.setup(ircLog);
 			systemLog.trace("Enabled twitch chat");
 		}
 		
-		if(ConfigFile.getHitboxChannel().length() > 0) {
+		if(ConfigFile.isServiceEnabled("hitbox")) {
 			HitboxMain.setup(hitboxchatLog);
 			systemLog.trace("Enabled hitbox chat");
 		}
 		
-		HLDSMain.setup(hldschatLog);
-		systemLog.trace("Enabled HLDS connection");
+		if(ConfigFile.isServiceEnabled("hlds")) {
+			HLDSMain.setup(hldschatLog);
+			systemLog.trace("Enabled HLDS connection");
+		}
 		
 		goLive();
 	}
@@ -106,7 +108,7 @@ public class BotMain {
 				break;
 				
 			case 't':
-				if (ConfigFile.shouldEnableTwitch()) {
+				if (ConfigFile.isServiceEnabled("twitch")) {
 					ircLog.debug("Commanded to chat");
 					IrcMain.sendMessage(contents);
 				}

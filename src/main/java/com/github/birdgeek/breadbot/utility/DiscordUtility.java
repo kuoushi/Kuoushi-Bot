@@ -20,7 +20,7 @@ public class DiscordUtility {
 	static JDA jda;
 	static Logger discordLog;
 	private static String helpFileName ="help.txt";
-	static String[] approvedUsers = getApprovedUsers();
+//	static String[] approvedUsers = getApprovedUsers();
 	
 	public DiscordUtility(JDA api, Logger log) {
 		DiscordUtility.jda = api;
@@ -155,10 +155,10 @@ public class DiscordUtility {
 	 * Returns String array of approved Users
 	 * @return
 	 */
-	public static String[] getApprovedUsers() {
+	/*public static String[] getApprovedUsers() {
 		return ConfigFile.getApprovedUsers();
 		
-	}
+	}*/
 	/**
 	 * 
 	 * @param e
@@ -172,14 +172,14 @@ public class DiscordUtility {
 	 * @param username
 	 * @return
 	 */
-	public static boolean isApprovedUser(String username) {
+/*	public static boolean isApprovedUser(String username) {
 		for (int i=0; i < approvedUsers.length; i++) {
 			if (username.equalsIgnoreCase(approvedUsers[i])) {
 				return true;
 			}
 		}
 			return false;
-	}
+	}*/
 	/**
 	 * Debug
 	 */

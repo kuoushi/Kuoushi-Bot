@@ -21,7 +21,7 @@ public class ChatEvent extends ListenerAdapter {
 	JDA jda;
 	Random random = new Random();
 	long start = BotMain.start;
-	String[] approvedUsers = DiscordUtility.getApprovedUsers();
+//	String[] approvedUsers = DiscordUtility.getApprovedUsers();
 	Logger discordLog;
 	
 	
@@ -52,7 +52,7 @@ public class ChatEvent extends ListenerAdapter {
 			break;
 		
 		case "#disconnect":
-			if (DiscordUtility.isApprovedUser(username)) {
+			if (ConfigFile.isModerator(username, "discord")) {
 
 				discordLog.info(e.getAuthor().getName() + " has stopped the bot!");
 
@@ -69,7 +69,7 @@ public class ChatEvent extends ListenerAdapter {
 			break;
 			
 		case "#kill":
-			if (DiscordUtility.isApprovedUser(username)) {
+			if (ConfigFile.isModerator(username, "discord")) {
 
 				discordLog.info(e.getAuthor().getName() + " has killed the bot!");
 
@@ -131,7 +131,7 @@ public class ChatEvent extends ListenerAdapter {
 			break;
 			
 		case "#currenttime":
-			if (DiscordUtility.isApprovedUser(username)) {
+			if (ConfigFile.isModerator(username, "discord")) {
 				DiscordUtility.delMessage(e);
 				StatsFile.updateCount("currenttime");				
 				e.getChannel().sendMessage("" + System.nanoTime()).queue();
@@ -151,14 +151,14 @@ public class ChatEvent extends ListenerAdapter {
 			break;
 			
 		case "#reload":
-			if (DiscordUtility.isApprovedUser(username)) {
+			if (ConfigFile.isModerator(username, "discord")) {
 //				ConfigFile.config.reload();
 				StatsFile.updateCount("reload");				
 			}
 			break;
 			
 		case "#debug":
-			if (DiscordUtility.isApprovedUser(username)) {
+			if (ConfigFile.isModerator(username, "discord")) {
 				
 				DiscordUtility.printDiagnostics();
 				discordLog.trace(e.getAuthor().getName() + "  issued the debug command!");

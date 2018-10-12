@@ -21,7 +21,7 @@ public class HitboxChatListener extends HitboxChat {
 		
 		repeatChannels = new ArrayList<String>();
 		
-		String[] channels = ConfigFile.getHitboxRepeaters().split(",");
+		List<String> channels = ConfigFile.getHitboxRepeaters();
 		for(String channel : channels) {
 			repeatChannels.add(channel);
 		}
