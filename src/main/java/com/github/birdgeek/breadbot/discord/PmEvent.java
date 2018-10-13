@@ -6,8 +6,6 @@ import java.util.Arrays;
 import org.slf4j.Logger;
 
 import com.github.birdgeek.breadbot.utility.ConfigFile;
-import com.github.birdgeek.breadbot.utility.DiscordUtility;
-import com.github.birdgeek.breadbot.utility.StatsFile;
 
 import net.dv8tion.jda.core.events.message.priv.PrivateMessageReceivedEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
@@ -24,16 +22,16 @@ public class PmEvent extends ListenerAdapter {
 			if (e.getAuthor().getId().equalsIgnoreCase(ConfigFile.getOwnerID())) { //Only owner can change the bot from PMS
 
 				discordLog.trace("Got PM from Owner");
-				switch (e.getMessage().getContent()) {
+				switch (e.getMessage().getContentStripped()) {
 				
 				case "#stats": //prints out from the stats file
-					StatsFile.readKeys(e);
-					StatsFile.updateCount("stats");
+//					StatsFile.readKeys(e);
+//					StatsFile.updateCount("stats");
 					break;
 					
 					//TODO Test this config editing
 				case "#config": //Edit the config from discord PM's
-					String[] configEditCmd = e.getMessage().getContent().substring(7).split(":"); 
+					String[] configEditCmd = e.getMessage().getContentStripped().substring(7).split(":"); 
 					//each part of the editing process needs to be
 					//split up by ":"
 					if (configEditCmd[0].equalsIgnoreCase("edit")) {
@@ -76,7 +74,7 @@ public class PmEvent extends ListenerAdapter {
 					break;
 
 				case "#help":
-					DiscordUtility.sendHelp(e.getChannel());
+//					DiscordUtility.sendHelp(e.getChannel());
 					break;
 				}
 			}

@@ -1,16 +1,19 @@
 package com.github.birdgeek.breadbot.discord;
 
+import java.util.List;
+
 import javax.security.auth.login.LoginException;
 
 import org.slf4j.Logger;
 
+import com.github.birdgeek.breadbot.utility.Channel;
 import com.github.birdgeek.breadbot.utility.ConfigFile;
 
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;
 import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.entities.Game;
-import net.dv8tion.jda.core.exceptions.RateLimitedException;
+import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.AccountType;
 
 public class DiscordMain {
@@ -28,12 +31,14 @@ public class DiscordMain {
 				.addEventListener(new InviteEvent()) 
 				.addEventListener(new DiscordToTwitchEvent())
 				.addEventListener(new PmEvent(discordLog)) //Passes Logger
-				.setGame(Game.of("KuoushiBot v" + ConfigFile.getVersion()))
-				.buildBlocking();
+				.setGame(Game.playing("KuoushiBot v" + ConfigFile.getVersion())).build();
+//				.buildBlocking();
+			jda.awaitReady();
 		}
-		catch (LoginException | IllegalArgumentException | InterruptedException | RateLimitedException e) {
+		catch (LoginException | IllegalArgumentException | InterruptedException e) {
 			discordLog.error(e.getMessage());
 		} //Builds the discord bot - Blocks everything until API is ready	
+
 		sendWelcome();
 	}
 	
@@ -55,6 +60,21 @@ public class DiscordMain {
 					.append(jda.getUserById("" + ConfigFile.getOwnerID()).getAsMention())
 					.build()).queue();
 		}
+	}
+	
+	public static void deleteLiveNotification(Channel channel, String service) {
+		int checkCount = 100;
+		for (Message message : jda.getTextChannelById(channel.getAnnounceChannel()).getIterableHistory())
+	     {
+			if (message.getContentDisplay().contains(channel.getUrl())) {
+				message.delete().queue(); 
+	        	break;
+	        }
+			
+			checkCount--;
+			if(checkCount <= 0)
+				break;
+	     }
 	}
 	
 }

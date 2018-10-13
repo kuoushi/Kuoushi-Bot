@@ -1,6 +1,5 @@
 package com.github.birdgeek.breadbot.discord;
 
-import com.github.birdgeek.breadbot.utility.DiscordUtility;
 
 //import net.dv8tion.jda.core.events.InviteReceivedEvent;
 import net.dv8tion.jda.core.events.guild.GuildJoinEvent;

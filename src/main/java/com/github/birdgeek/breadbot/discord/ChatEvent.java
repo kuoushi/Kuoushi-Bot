@@ -6,12 +6,8 @@ import org.slf4j.Logger;
 import com.github.birdgeek.breadbot.BotMain;
 import com.github.birdgeek.breadbot.hlds.HLDSMain;
 import com.github.birdgeek.breadbot.utility.ConfigFile;
-import com.github.birdgeek.breadbot.utility.DiscordUtility;
-import com.github.birdgeek.breadbot.utility.StatsFile;
 
 import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.MessageBuilder;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
 
@@ -41,14 +37,14 @@ public class ChatEvent extends ListenerAdapter {
 	 * @see net.dv8tion.jda.hooks.ListenerAdapter#onMessageReceived(net.dv8tion.jda.events.message.MessageReceivedEvent)
 	 */
 	public void onGuildMessageReceived(GuildMessageReceivedEvent e) {
-		String username = DiscordUtility.getUsername(e);
+		String username = e.getAuthor().getName();
 					
-		switch (e.getMessage().getContent()) {
+		switch (e.getMessage().getContentStripped()) {
 		
 		case "#ping":
-			DiscordUtility.delMessage(e);
+//			DiscordUtility.delMessage(e);
 			e.getChannel().sendMessage("PONG").queue();
-			StatsFile.updateCount("ping");
+//			StatsFile.updateCount("ping");
 			break;
 		
 		case "#disconnect":
@@ -56,8 +52,8 @@ public class ChatEvent extends ListenerAdapter {
 
 				discordLog.info(e.getAuthor().getName() + " has stopped the bot!");
 
-				DiscordUtility.delMessage(e);
-				StatsFile.updateCount("disconnect");
+//				DiscordUtility.delMessage(e);
+//				StatsFile.updateCount("disconnect");
 				jda.shutdown();
 			}
 			else {
@@ -73,8 +69,8 @@ public class ChatEvent extends ListenerAdapter {
 
 				discordLog.info(e.getAuthor().getName() + " has killed the bot!");
 
-				DiscordUtility.delMessage(e);
-				StatsFile.updateCount("kill");
+//				DiscordUtility.delMessage(e);
+//				StatsFile.updateCount("kill");
 				/*
 				if (IrcMain.isRunning) {
 					IrcMain.irc.close();
@@ -94,8 +90,8 @@ public class ChatEvent extends ListenerAdapter {
 			
 		case "#flip":
 			boolean choice = random.nextBoolean();
-			DiscordUtility.delMessage(e);
-			StatsFile.updateCount("flip");			
+//			DiscordUtility.delMessage(e);
+//			StatsFile.updateCount("flip");			
 			 if (choice == true) {
 				 e.getChannel().sendMessage("Heads!").queue();
 			 }
@@ -108,32 +104,32 @@ public class ChatEvent extends ListenerAdapter {
 			break;
 			
 		case "#help":
-			DiscordUtility.delMessage(e);
-			StatsFile.updateCount("help");			
-			DiscordUtility.sendHelp(e);			
+//			DiscordUtility.delMessage(e);
+//			StatsFile.updateCount("help");			
+//			DiscordUtility.sendHelp(e);			
 			break;
 			
 		case "#globalhelp":
-			DiscordUtility.delMessage(e);
-			StatsFile.updateCount("globalhelp");			
-			DiscordUtility.sendGlobalHelp(e);			
+//			DiscordUtility.delMessage(e);
+//			StatsFile.updateCount("globalhelp");			
+//			DiscordUtility.sendGlobalHelp(e);			
 			break;
 			
 		case "#uptime":
-			DiscordUtility.delMessage(e);
-			StatsFile.updateCount("uptime");			
-			DiscordUtility.sendUptime(e);		
+//			DiscordUtility.delMessage(e);
+//			StatsFile.updateCount("uptime");			
+//			DiscordUtility.sendUptime(e);		
 			break;
 			
 		case "#serverstatus":
-			DiscordUtility.delMessage(e);
+//			DiscordUtility.delMessage(e);
 			e.getChannel().sendMessage(HLDSMain.getServerStatus());		
 			break;
 			
 		case "#currenttime":
 			if (ConfigFile.isModerator(username, "discord")) {
-				DiscordUtility.delMessage(e);
-				StatsFile.updateCount("currenttime");				
+//				DiscordUtility.delMessage(e);
+//				StatsFile.updateCount("currenttime");				
 				e.getChannel().sendMessage("" + System.nanoTime()).queue();
 			}
 			else {
@@ -145,22 +141,22 @@ public class ChatEvent extends ListenerAdapter {
 			break;
 			
 		case "#dev":
-			DiscordUtility.delMessage(e);
-			StatsFile.updateCount("dev");			
+//			DiscordUtility.delMessage(e);
+//			StatsFile.updateCount("dev");			
 			e.getChannel().sendMessage("KuoushiBot is developed by Kuoushi and all the code can be found on his hard drive.").queue();			
 			break;
 			
 		case "#reload":
 			if (ConfigFile.isModerator(username, "discord")) {
 //				ConfigFile.config.reload();
-				StatsFile.updateCount("reload");				
+//				StatsFile.updateCount("reload");				
 			}
 			break;
 			
 		case "#debug":
 			if (ConfigFile.isModerator(username, "discord")) {
 				
-				DiscordUtility.printDiagnostics();
+//				DiscordUtility.printDiagnostics();
 				discordLog.trace(e.getAuthor().getName() + "  issued the debug command!");
 			}
 			break;
@@ -173,7 +169,7 @@ public class ChatEvent extends ListenerAdapter {
 			break;
 		
 		case "#attach":
-			if (DiscordUtility.isOwner(DiscordUtility.getUsernameID(e))) {
+			if (e.getAuthor().getId().equals(ConfigFile.getOwnerID())) {
 				e.getChannel().sendMessage("Trying to switch the home channel").queue();
 				if (ConfigFile.getHomeChannel().toString().equalsIgnoreCase(e.getChannel().getId())) {
 					e.getChannel().sendMessage("**This is already the home channel!**").queue();

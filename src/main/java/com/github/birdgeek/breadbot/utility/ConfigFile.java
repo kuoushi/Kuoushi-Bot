@@ -103,6 +103,10 @@ public class ConfigFile {
 		return getService(service).getDefaultDiscordAnnounceChannel();
 	}
 	
+	public static String getAnnounceChannel(String channel, String service) {
+		return getService(service).getDefaultDiscordAnnounceChannel();
+	}
+	
 	public static boolean isServiceEnabled(String service) {
 		return getService(service).isEnabled();
 	}
@@ -140,6 +144,15 @@ public class ConfigFile {
 			}
 		}
 		return false;
+	}
+	
+	public static Channel getChannel(String channel, String service) {
+		for(Channel c : channels) {
+			if(c.getName().equalsIgnoreCase(channel)) {
+				return c;
+			}
+		}
+		return null;
 	}
 	
 	/*
@@ -229,8 +242,21 @@ public class ConfigFile {
 		return build;
 	}
 	
+	public static List<String> getTwitchChannels() {
+		List<String> build = new ArrayList<String>();
+		for(Channel a : channels) {
+			if(a.getService().equals("twitch"))
+				build.add(a.getName());
+		}
+		return build;
+	}
+	
 	public static String getTwitchDiscordChannelID() {
 		return twitch.getDefaultDiscordRelayChannel();
+	}
+	
+	public static String getTwitchDiscordAnnounceChannelID() {
+		return twitch.getDefaultDiscordAnnounceChannel();
 	}
 	
 	public static String getTwitchDiscordChannelID(String channel) {
@@ -239,6 +265,14 @@ public class ConfigFile {
 				return c.getRelayChannel();
 		}
 		return twitch.getDefaultDiscordRelayChannel();
+	}
+	
+	public static String getTwitchDiscordAnnounceChannelID(String channel) {
+		for(Channel c : channels) {
+			if(c.getName().equalsIgnoreCase(channel))
+				return c.getAnnounceChannel();
+		}
+		return twitch.getDefaultDiscordAnnounceChannel();
 	}
 	
 	/*

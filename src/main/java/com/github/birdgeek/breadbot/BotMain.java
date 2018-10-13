@@ -10,8 +10,6 @@ import com.github.birdgeek.breadbot.irc.IrcMain;
 import com.github.birdgeek.breadbot.notifiers.NotifiersMain;
 import com.github.birdgeek.breadbot.hlds.HLDSMain;
 import com.github.birdgeek.breadbot.utility.ConfigFile;
-import com.github.birdgeek.breadbot.utility.DiscordUtility;
-import com.github.birdgeek.breadbot.utility.StatsFile;
 
 import org.slf4j.Logger;
 
@@ -19,7 +17,6 @@ public class BotMain {
 	
 	public static long start;
 	static ConfigFile config;
-	static StatsFile stats;
 	static String version;
 	public static Logger discordLog;
 	public static Logger ircLog;
@@ -44,7 +41,6 @@ public class BotMain {
 	
 		
 		config = new ConfigFile();
-		stats = new StatsFile();
 		
 		start = System.currentTimeMillis();
 		version =  ConfigFile.getVersion();
@@ -91,20 +87,20 @@ public class BotMain {
 			case 'k':
 				
 				discordLog.debug("Commanded to kill");
-				DiscordUtility.sendMessage("Quiting from Console");
+//				DiscordUtility.sendMessage("Quiting from Console");
 				shouldContinue = false;
 				break;
 				
 			case 'c':
 				
 				discordLog.debug("Commanded to chat");
-				DiscordUtility.sendMessage("[console] " + contents);
+//				DiscordUtility.sendMessage("[console] " + contents);
 				break;
 				
 			case 'd':
 				
 				discordLog.debug("Commanded to print diagnostics");
-				DiscordUtility.printDiagnostics();
+//				DiscordUtility.printDiagnostics();
 				break;
 				
 			case 't':

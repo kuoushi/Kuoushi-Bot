@@ -13,15 +13,15 @@ public class Message {
 	String service;
 	Date receivedOn;
 	
-	Message (GuildMessageReceivedEvent e) {
+	public Message (GuildMessageReceivedEvent e) {
 		author = e.getAuthor().getName();
 		channel = e.getChannel().getId();
-		message = e.getMessage().getContent();
+		message = e.getMessage().getContentDisplay();
 		service = "discord";
 		receivedOn = new Date();
 	}
 	
-	Message (MessageEvent e) {
+	public Message (MessageEvent e) {
 		author = e.getUser().getNick();
 		channel = e.getChannel().getName();
 		message = e.getMessage();
@@ -29,7 +29,7 @@ public class Message {
 		receivedOn = new Date();
 	}
 	
-	Message (JSONObject e) {
+	public Message (JSONObject e) {
 		author = e.getString("name");
 		channel = e.getString("channel");
 		message = e.getString("text");

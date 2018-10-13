@@ -1,12 +1,11 @@
 package com.github.birdgeek.breadbot.notifiers;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.github.birdgeek.breadbot.discord.DiscordMain;
-import com.github.birdgeek.breadbot.irc.IrcMain;
-import com.github.birdgeek.breadbot.hlds.HLDSMain;
+import com.github.birdgeek.breadbot.utility.ChatHandler;
 import com.github.birdgeek.breadbot.utility.ConfigFile;
 import com.mb3364.http.RequestParams;
 import com.mb3364.twitch.api.handlers.StreamsResponseHandler;
@@ -30,7 +29,7 @@ public class TwitchNotifiers implements Runnable {
 		keepGoing = true;
 		pollTime = i;
 		
-		String[] channels = ConfigFile.getTwitchChannel().split(",");
+		List<String> channels = ConfigFile.getTwitchChannels();
 		for(String channel : channels) {
 			Channel x = new Channel();
 			Stream temp = new Stream();
@@ -49,7 +48,8 @@ public class TwitchNotifiers implements Runnable {
 	@Override
 	public void run() {	
 		params = new RequestParams();
-		params.put("channel",ConfigFile.getTwitchChannel());
+		String c = ConfigFile.getTwitchChannels().toString().replaceAll(", ", ",");
+		params.put("channel",c.substring(1,c.length()-1));
 		
 		while(keepGoing) {
 			try {
@@ -88,6 +88,13 @@ public class TwitchNotifiers implements Runnable {
 			public void onSuccess(int count, List<Stream> rStreams) {
 //				NotifiersMain.notifiersLog.info("response received: " + rStreams.size() + " streams live");
 				for(String key : streams.keySet()) {
+					com.github.birdgeek.breadbot.utility.Channel c = ConfigFile.getChannel(streams.get(key).getChannel().getName(),"twitch");
+					
+					if(c == null) {
+						NotifiersMain.notifiersLog.info("Could not find channel " + streams.get(key).getChannel().getName() + " for Twitch service.");
+						continue;
+					}
+					
 					String name = streams.get(key).getChannel().getDisplayName();
 					String channel = streams.get(key).getChannel().getName();
 					Stream current = streams.get(key);
@@ -101,6 +108,9 @@ public class TwitchNotifiers implements Runnable {
 									found = true;
 									streams.put(key, a);
 									streamStats.get(channel).addViewers(a.getViewers());
+									c.updateViewers(a.getViewers());
+									c.updateGame(a.getGame());
+									c.updateCurrentStatus(a.getChannel().getStatus());
 									break;
 								}
 							}
@@ -112,14 +122,7 @@ public class TwitchNotifiers implements Runnable {
 								StreamStats end = streamStats.get(channel);
 								streamStats.put(channel,null);
 								
-								NotifiersMain.notifiersLog.info(name + " has gone offline.");
-								IrcMain.sendMessage("Relay shutting down. Join our Discord if you want to chat more! https://discord.gg/0R8wxAjGrpBMK690",channel);
-								IrcMain.partChannel(channel);
-								DiscordMain.jda.getTextChannelById(ConfigFile.getTwitchDiscordChannelID())
-									.sendMessage("*Relay to #" + channel + " on Twitch closed.*").queue();
-								DiscordMain.jda.getTextChannelById(ConfigFile.getTwitchDiscordChannelID())
-									.sendMessage(name + "'s stream has ended. " + end.getViewerAverage() + " average viewers, " + end.getViewerPeak() + " peak viewers. (" + end.getStreamDurationString() + ")").queue();
-								HLDSMain.sendMessage("Twitch stream has gone offline. Relay is shutting down.","force");
+								ChatHandler.wentOffline(c,end);
 							}
 						}
 						else { // old stream info is offline
@@ -131,18 +134,15 @@ public class TwitchNotifiers implements Runnable {
 										streams.put(key, a); // we online now
 										streamStats.put(channel,new StreamStats());
 										
+										c.updateViewers(a.getViewers());
+										c.updateGame(a.getGame());
+										c.updateCurrentStatus(a.getChannel().getStatus());
+										c.updateDisplayName(a.getChannel().getDisplayName());
+										c.updateURL(a.getChannel().getUrl());
+										
+										ChatHandler.cameOnline(c);
+										
 										NotifiersMain.notifiersLog.info(name + " has come online.");
-										IrcMain.joinChannel(channel);
-										IrcMain.sendMessage("Now relaying messages to and from our Discord", channel);
-										
-										DiscordMain.jda.getTextChannelById(ConfigFile.getTwitchDiscordChannelID())
-											.sendMessage("@here " + name + " is live on Twitch! \"" + a.getChannel().getStatus() + "\" (" + a.getGame() + "): " + a.getViewers() + " viewers. <" + a.getChannel().getUrl() + ">").queue();
-										DiscordMain.jda.getTextChannelById(ConfigFile.getTwitchDiscordChannelID())
-											.sendMessage("*Now relaying messages to and from #" + name + " on Twitch.*").queue();
-										
-										HLDSMain.sendMessage(name + " is now live on Twitch.",channel);
-										HLDSMain.sendMessage("Now relaying messages to and from Discord/Twitch.",channel);
-										break;
 									}
 								}
 							}
@@ -175,22 +175,16 @@ public class TwitchNotifiers implements Runnable {
 		return streams.get(key).getGame();
 	}
 	
-	public static synchronized String[] getLiveStreams() {
-		String[] temp = new String[streams.size()];
-		int i = 0;
+	public static synchronized List<String> getLiveStreams() {
+		List<String> temp = new ArrayList<String>();
+
 		for(String key : streams.keySet()) {
 			if(streams.get(key).isOnline()) {
-				temp[i] = key;
-				i++;
+				temp.add(key);
 			}
 		}
 		
-		String[] returnMe = new String[i];
-		for(int j = 0; j < i; j++) {
-			returnMe[j] = temp[j];
-		}
-		
-		return returnMe;
+		return temp;
 	}
 	
 	public void stop() {

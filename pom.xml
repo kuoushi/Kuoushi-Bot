@@ -42,20 +42,15 @@
 		<version>1.7.18</version>
 	</dependency>
 <!--	<dependency>
-    <groupId>net.dv8tion</groupId>
+    	<groupId>net.dv8tion</groupId>
     	<artifactId>JDA</artifactId>
-	    <version>2.3.0_379</version>
+    	<version>3.3.1_286</version>
 	</dependency> -->
 	<dependency>
     	<groupId>net.dv8tion</groupId>
     	<artifactId>JDA</artifactId>
-    	<version>3.3.1_286</version>
+    	<version>3.8.1_437</version>
 	</dependency>
-<!--	<dependency>
-		<groupId>net.dv8tion</groupId>
-		<artifactId>JDA</artifactId>
-		<version>1.4.0_239</version>
-	</dependency> -->    
 	<dependency>
         <groupId>org.pircbotx</groupId>
         <artifactId>pircbotx</artifactId>

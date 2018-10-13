@@ -8,8 +8,7 @@ import java.util.List;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import com.github.birdgeek.breadbot.discord.DiscordMain;
-import com.github.birdgeek.breadbot.hitbox.HitboxMain;
+import com.github.birdgeek.breadbot.utility.ChatHandler;
 import com.github.birdgeek.breadbot.utility.ConfigFile;
 import com.kuoushi.hitboxjapi.Hitbox;
 
@@ -72,6 +71,15 @@ public class HitboxNotifiers implements Runnable {
 			if(arr != null) {
 				for(int i = 0; i < arr.length(); i++) {
 					JSONObject curr = arr.getJSONObject(i);
+					
+					com.github.birdgeek.breadbot.utility.Channel c = ConfigFile.getChannel(curr.getString("media_name"),"hitbox");
+					
+					if(c == null) {
+						NotifiersMain.notifiersLog.info("Could not find channel " + curr.getString("media_name") + " for Hitbox service.");
+						continue;
+					}
+					
+					
 					String channel  = curr.getString("media_name");
 					String name     = curr.getString("media_user_name");
 						
@@ -79,32 +87,33 @@ public class HitboxNotifiers implements Runnable {
 						streams.put(channel, curr);
 						if(curr.getInt("media_is_live") == 0) {
 							NotifiersMain.notifiersLog.info(name + " has gone offline.");
-							HitboxMain.sendMessage("Relay shutting down. Join our Discord if you want to chat more! https://discord.gg/0R8wxAjGrpBMK690",channel);
-							HitboxMain.partChannel(channel);
 							
 							StreamStats end = streamStats.get(channel);
 							streamStats.put(channel, null);
 							
-							DiscordMain.jda.getTextChannelById(ConfigFile.getTwitchDiscordChannelID())
-								.sendMessage("*Relay to #" + channel + " on Hitbox closed.*").queue();
-							DiscordMain.jda.getTextChannelById(ConfigFile.getTwitchDiscordChannelID())
-								.sendMessage(name + "'s stream has ended. " + end.getViewerAverage() + " average viewers, " + end.getViewerPeak() + " peak viewers. (" + end.getStreamDurationString() + ")").queue();
+							ChatHandler.wentOffline(c, end);
 						}
 						else {
 							streamStats.get(channel).addViewers(curr.getInt("media_views"));
+							c.updateViewers(Integer.parseInt(curr.getString("media_views")));
+							c.updateGame(curr.getString("category_name"));
+							c.updateCurrentStatus(curr.getString("media_status"));
 						}
 					}
 					else {
 						streams.put(channel, curr);
 						if(curr.getInt("media_is_live") == 1) {
 							streamStats.put(channel, new StreamStats());
+							
+							c.updateViewers(Integer.parseInt(curr.getString("media_views")));
+							c.updateGame(curr.getString("category_name"));
+							c.updateCurrentStatus(curr.getString("media_status"));
+							c.updateDisplayName(curr.getString("media_user_name"));
+							c.updateURL(curr.getJSONObject("channel").getString("channel_link"));
+							
+							ChatHandler.cameOnline(c);
+							
 							NotifiersMain.notifiersLog.info(name + " has come online.");
-							HitboxMain.joinChannel(channel);
-							HitboxMain.sendMessage("Now relaying messages to and from our Discord",channel);
-							DiscordMain.jda.getTextChannelById(ConfigFile.getTwitchDiscordChannelID())
-								.sendMessage("@here " + name + " is live on Hitbox! \"" + curr.getString("media_status") + "\" (" + curr.getString("category_name") + "): " + curr.getString("media_views") + " viewers. " + curr.getJSONObject("channel").getString("channel_link")).queue();
-							DiscordMain.jda.getTextChannelById(ConfigFile.getTwitchDiscordChannelID())
-								.sendMessage("*Now relaying messages to and from #" + channel + " on Hitbox.*").queue();
 						}
 					}
 				}

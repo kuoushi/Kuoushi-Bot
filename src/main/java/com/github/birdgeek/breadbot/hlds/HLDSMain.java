@@ -39,29 +39,51 @@ public class HLDSMain {
 	}
 	
 	public static void sendMessage(String contents) {
-		String[] streams = TwitchNotifiers.getLiveStreams();
-		for(int i = 0; i < streams.length; i++) {
-			sendMessage(contents,streams[i]);
+		List<String> streams = TwitchNotifiers.getLiveStreams();
+		for(int i = 0; i < streams.size(); i++) {
+			sendMessage(contents,streams.get(i));
 		}
 	}
 	
 	public static void sendMessage(String contents, String channel) {
+		boolean tooLong = false;
+		String send = contents;
+		
+		if(contents.length() > 63) {
+			int substr = contents.substring(0,63).lastIndexOf(" ");
+			if(substr <= 20) {
+				substr = 63;
+			}
+			send = send.substring(0,substr);
+			contents = contents.substring(substr);
+			tooLong = true;
+			System.out.println(send + "\n" + contents);
+		}
+		
 		if(channel.equals("force")) {
-			sendRcon("say " + contents);
+			sendRcon("say " + send);
 		}
 		else if(channel.equals("kuoushi")) {
 			if(TwitchNotifiers.isOnline(channel)) {
 				if(TwitchNotifiers.getGame(channel).equals("Sven Co-Op") || TwitchNotifiers.getGame(channel).equals("Half-Life")) {
-					sendRcon("say " + contents);
+					sendRcon("say " + send);
 				}
 			}
+		}
+		if(tooLong) {
+			try {
+				Thread.sleep(50);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			sendMessage(contents,channel);
 		}
 	}
 	
 	public static void sendRcon(String contents) {
 		try {
 			for(GoldSrcServer g : myServ) {
-				g.rconExec(contents);
+				hldschatLog.info(g.rconExec(contents));
 			}
 		} catch (TimeoutException e) {
 			hldschatLog.info("Timeout sending message to HLDS: " + e.toString());

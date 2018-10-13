@@ -4,12 +4,17 @@ import org.json.simple.JSONObject;
 
 public class Channel {
 	private String name;
+	private String displayName;
 	private String service;
 	private boolean relay;
 	private boolean announce;
 	private boolean imageRepeat;
 	private String relayChannel;
 	private String announceChannel;
+	private String currentStatus;
+	private String currentGame;
+	private int currentViewers;
+	private String url;
 	
 	public Channel() {
 		name = "kuoushi";
@@ -64,6 +69,18 @@ public class Channel {
 		name = n;
 	}
 	
+	public void updateGame(String n) {
+		currentGame = n;
+	}
+	
+	public void updateURL(String n) {
+		url = n;
+	}
+	
+	public void updateViewers(int n) {
+		currentViewers = n;
+	}
+	
 	public void updateService(String n) {
 		service = n;
 	}
@@ -74,6 +91,14 @@ public class Channel {
 	
 	public void updateAnnounceChannel(String n) {
 		announceChannel = n;
+	}
+	
+	public void updateDisplayName(String n) {
+		displayName = n;
+	}
+	
+	public void updateCurrentStatus(String n) {
+		currentStatus = n;
 	}
 	
 	public void updateAnnounce(boolean n) {
@@ -90,6 +115,26 @@ public class Channel {
 	
 	public String getName() {
 		return name;
+	}
+	
+	public String getGame() {
+		return currentGame;
+	}
+
+	public String getUrl() {
+		return url;
+	}
+
+	public int getViewers() {
+		return currentViewers;
+	}
+	
+	public String getDisplayName() {
+		return displayName;
+	}
+	
+	public String getCurrentStatus() {
+		return currentStatus;
 	}
 	
 	public String getService() {
