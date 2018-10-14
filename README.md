@@ -3,23 +3,33 @@ This is a hard fork of the original BreadBot by Birdgeek. Features are being rem
 
 One quick note, I am not a professional developer. I'm making this to support my own stream stuff and that's about it. If other people use it, then that's pretty neat.
 
-## Features: 
+## Features
 Relay chat messages from Discord to Twitch/Hitbox/Half-Life Goldsrc Servers (Source coming soon)
+
 Announce when streams go live - 1) in the relay channel, 2) in a special announcements only channel
+
 Basic configuration through manually editable JSON file
+
 Add or enable any number of streams and services for the bot to watch and announce/relay
+
 - (Hitbox support hasn't been tested lately)
 
-## Roadmap:
+## Roadmap
 Refactoring messaging backend to be more generic to allow for better support of future features
+
 Reimplement command backend
+
 Poll/vote system
+
 Allow the server to change server variables on HLDS/Source servers in response to chat commands
+
 Support for chat realy FROM Goldsrc and Source servers to Discord
+
 More configurable relay directions (such as choosing what service is hosting the base channel (Twitch/Hitbox/Discord/IRC/etc), instead of just assuming Discord is the base channel
+
 Full reimplementation of HSLStatsX:CE proxy in the bot (this is a distant, distant feature)
 
-## Installation:
+## Installation
 
 ###### Current Version: 0.2.1
 
@@ -28,9 +38,10 @@ There's currently no JAR file available, but you should be able to just load thi
 ## Usage:
 
 Create a config.json file based on the template with your desired settings then run:
-java -jar kuobot.jar
 
-## Contributing:
+`java -jar kuobot.jar`
+
+## Contributing
 
 If you think you can parse through my spaghetti code enough to contribute a feature, then by all means do the following.
 
@@ -41,14 +52,15 @@ If you think you can parse through my spaghetti code enough to contribute a feat
  5. Submit a pull request
 
 If you just want to suggest a feature for the bot to support - go to the issues page and add a feature request!
+
 I will warn you though that I won't be implementing any specific features from the request page on any kind of timely schedule. The more I like the feature, the more likely/quickly it'll be implemented. That's it.
 
 ## Credits
 
-I'm using a few other libraries to make this all possible and they need some credit :)
+I'm using a few other libraries to do a lot of the heavy lifting.
+
 ### Libraries
 - [JDA](https://github.com/DV8FromTheWorld/JDA)
-- [Apached Commons Configuration](https://commons.apache.org/proper/commons-configuration/)
 - [PircBotX](https://github.com/TheLQ/pircbotx)
 - [Steam Condenser](https://github.com/koraktor/steam-condenser-java)
 
