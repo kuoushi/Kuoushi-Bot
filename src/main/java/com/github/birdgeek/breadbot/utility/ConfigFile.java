@@ -83,8 +83,10 @@ public class ConfigFile {
 			return twitch;
 		else if(s.equalsIgnoreCase("hitbox"))
 			return hitbox;
-		else
+		else if(s.equalsIgnoreCase("hlds"))
 			return servers;
+		else
+			return null;
 	}
 	
 	public static String getUsername(String service) {
@@ -153,6 +155,41 @@ public class ConfigFile {
 			}
 		}
 		return null;
+	}
+	
+	public static boolean isRelayChannel(String channel) {
+		for(Channel c : channels) {
+			if(c.getRelayChannel().equalsIgnoreCase(channel))
+				return true;
+		}
+		return false;
+	}
+	
+	public static List<Channel> getChannels(String service) {
+		List<Channel> build = new ArrayList<Channel>();
+		for(Channel a : channels) {
+			if(a.getService().equals(service))
+				build.add(a);
+		}
+		return build;
+	}
+	
+	public static List<Channel> getOnlineChannels() {
+		List<Channel> build = new ArrayList<Channel>();
+		for(Channel a : channels) {
+			if(a.isOnline())
+				build.add(a);
+		}
+		return build;
+	}
+	
+	public static List<Channel> getOnlineChannels(String service) {
+		List<Channel> build = new ArrayList<Channel>();
+		for(Channel a : channels) {
+			if(a.getService().equals(service) && a.isOnline())
+				build.add(a);
+		}
+		return build;
 	}
 	
 	/*

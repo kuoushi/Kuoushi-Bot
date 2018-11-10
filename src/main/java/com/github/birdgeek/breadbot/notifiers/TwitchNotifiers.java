@@ -86,7 +86,6 @@ public class TwitchNotifiers implements Runnable {
 
 			@Override
 			public void onSuccess(int count, List<Stream> rStreams) {
-//				NotifiersMain.notifiersLog.info("response received: " + rStreams.size() + " streams live");
 				for(String key : streams.keySet()) {
 					com.github.birdgeek.breadbot.utility.Channel c = ConfigFile.getChannel(streams.get(key).getChannel().getName(),"twitch");
 					
@@ -104,7 +103,6 @@ public class TwitchNotifiers implements Runnable {
 							boolean found = false;
 							for(Stream a : rStreams) {
 								if(channel.equalsIgnoreCase(a.getChannel().getName())) { // stream is still online
-//									NotifiersMain.notifiersLog.info(name + " is still online.");
 									found = true;
 									streams.put(key, a);
 									streamStats.get(channel).addViewers(a.getViewers());
@@ -117,7 +115,7 @@ public class TwitchNotifiers implements Runnable {
 								
 							if(!found) { // stream is now offline
 								sanity.put(key, 1);
-								setOffline(key); // streams.get(key).setId(0); // we offline now
+								setOffline(key);
 								
 								StreamStats end = streamStats.get(channel);
 								streamStats.put(channel,null);
@@ -131,7 +129,7 @@ public class TwitchNotifiers implements Runnable {
 									if(channel.equalsIgnoreCase(a.getChannel().getName())) { // stream is has come online
 										sanity.put(key, 1);
 										setOnline(key);
-										streams.put(key, a); // we online now
+										streams.put(key, a);
 										streamStats.put(channel,new StreamStats());
 										
 										c.updateViewers(a.getViewers());

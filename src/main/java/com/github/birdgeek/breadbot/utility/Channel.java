@@ -15,6 +15,7 @@ public class Channel {
 	private String currentGame;
 	private int currentViewers;
 	private String url;
+	private boolean online;
 	
 	public Channel() {
 		name = "kuoushi";
@@ -24,6 +25,7 @@ public class Channel {
 		relayChannel = "";
 		announceChannel = "";
 		imageRepeat = false;
+		online = false;
 	}
 	
 	public Channel(JSONObject j) {
@@ -43,6 +45,11 @@ public class Channel {
 		if(j.containsKey("announce-channel")) {
 			announceChannel = (String)j.get("announce-channel");
 		}
+		online = false;
+		currentStatus = "";
+		currentGame = "";
+		currentViewers = 0;
+		url = "";
 	}
 	
 	public Channel(String n, String serv, boolean rel, boolean ann, String relC, String annC) {
@@ -53,6 +60,11 @@ public class Channel {
 		relayChannel = relC;
 		announceChannel = annC;
 		imageRepeat = false;
+		online = false;
+		currentStatus = "";
+		currentGame = "";
+		currentViewers = 0;
+		url = "";
 	}
 	
 	public Channel(String n, String serv, boolean rel, boolean ann, String relC, String annC, boolean imageR) {
@@ -63,6 +75,11 @@ public class Channel {
 		relayChannel = relC;
 		announceChannel = annC;
 		imageRepeat = imageR;
+		online = false;
+		currentStatus = "";
+		currentGame = "";
+		currentViewers = 0;
+		url = "";
 	}
 	
 	public void updateName(String n) {
@@ -113,6 +130,10 @@ public class Channel {
 		imageRepeat = n;
 	}
 	
+	public void updateOnline(boolean n) {
+		online = n;
+	}
+	
 	public String getName() {
 		return name;
 	}
@@ -159,6 +180,10 @@ public class Channel {
 	
 	public boolean getImageRepeat() {
 		return imageRepeat;
+	}
+	
+	public boolean isOnline() {
+		return online;
 	}
 	
 	public String toString() {

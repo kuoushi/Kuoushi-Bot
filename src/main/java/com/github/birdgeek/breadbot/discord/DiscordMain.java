@@ -47,14 +47,15 @@ public class DiscordMain {
 	 */
 	public static void sendWelcome() {
 		
-		jda.getTextChannelById(ConfigFile.getHomeChannel()).sendMessage(
+		if (ConfigFile.shouldSendWelcomeMention()) { //Should we mention the Owner
+			jda.getTextChannelById(ConfigFile.getHomeChannel()).sendMessage(
 				new MessageBuilder()
 				.appendCodeBlock("Kuoushi Bot is now active! \n"
 						+ "Version: " + ConfigFile.getVersion()
 						, "python")
 				.build()).queue();
 		
-		if (ConfigFile.shouldSendWelcomeMention()) { //Should we mention the Owner
+		
 			jda.getTextChannelById("" + ConfigFile.getHomeChannel()).sendMessage(new MessageBuilder()
 					.append("I am being run by ")
 					.append(jda.getUserById("" + ConfigFile.getOwnerID()).getAsMention())

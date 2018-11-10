@@ -51,8 +51,12 @@ public class Service {
 	}
 	
 	protected static boolean makeBoolean(Object j) {
-		if(j != null)
-			return (boolean)j;
+		if(j != null) {
+			if(j.getClass().getName().equalsIgnoreCase("java.lang.Boolean"))
+				return ((Boolean)j).booleanValue();
+			else
+				return ((String)j).equalsIgnoreCase("true");
+		}
 		return false;
 	}
 	

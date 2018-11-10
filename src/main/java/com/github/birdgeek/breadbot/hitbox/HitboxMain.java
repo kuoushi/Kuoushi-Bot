@@ -97,6 +97,10 @@ public class HitboxMain {
 		curr.partChannel(contents);
 		channels.put(contents, null);
 	}
+	
+	public static String botUser() {
+		return botuser;
+	}
 		
 	private static String getURI() {
 		String a = null;

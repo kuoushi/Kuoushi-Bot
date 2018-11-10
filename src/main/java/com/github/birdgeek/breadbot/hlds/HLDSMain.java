@@ -2,13 +2,13 @@ package com.github.birdgeek.breadbot.hlds;
 
 import java.util.concurrent.TimeoutException;
 import java.util.List;
+import java.net.InetAddress;
 import java.util.ArrayList;
 
 import org.slf4j.Logger;
 
 import com.github.koraktor.steamcondenser.exceptions.SteamCondenserException;
 import com.github.koraktor.steamcondenser.steam.servers.GoldSrcServer;
-import com.github.birdgeek.breadbot.notifiers.TwitchNotifiers;
 import com.github.birdgeek.breadbot.utility.ConfigFile;
 import com.github.birdgeek.breadbot.utility.Server;
 
@@ -16,7 +16,6 @@ import com.github.birdgeek.breadbot.utility.Server;
 public class HLDSMain {
 	static Logger hldschatLog;
 	private static List<GoldSrcServer> myServ;
-//	private static String rconPass[]; 
 	
 	public static void setup(Logger log) {
 		hldschatLog = log;
@@ -39,13 +38,25 @@ public class HLDSMain {
 	}
 	
 	public static void sendMessage(String contents) {
-		List<String> streams = TwitchNotifiers.getLiveStreams();
-		for(int i = 0; i < streams.size(); i++) {
-			sendMessage(contents,streams.get(i));
+		for(GoldSrcServer s : myServ) {
+			sendMessage(contents,s);
 		}
 	}
 	
-	public static void sendMessage(String contents, String channel) {
+	public static void sendMessage(String contents, Server serv) {
+		for(GoldSrcServer g : myServ) {
+			List<InetAddress> ip = g.getIpAddresses();
+			for(InetAddress i : ip) {
+				hldschatLog.info("serv address: " + i.getHostAddress() + " address param: " + serv.getServerAddress());
+				if(serv.getServerAddress().startsWith(i.getHostAddress())) {
+					sendMessage(contents,g);
+					return;
+				}
+			}
+		}
+	}
+	
+	public static void sendMessage(String contents, GoldSrcServer server) {
 		boolean tooLong = false;
 		String send = contents;
 		
@@ -57,34 +68,48 @@ public class HLDSMain {
 			send = send.substring(0,substr);
 			contents = contents.substring(substr);
 			tooLong = true;
-			System.out.println(send + "\n" + contents);
 		}
 		
-		if(channel.equals("force")) {
-			sendRcon("say " + send);
-		}
-		else if(channel.equals("kuoushi")) {
-			if(TwitchNotifiers.isOnline(channel)) {
-				if(TwitchNotifiers.getGame(channel).equals("Sven Co-Op") || TwitchNotifiers.getGame(channel).equals("Half-Life")) {
-					sendRcon("say " + send);
-				}
-			}
-		}
+		sendRcon("say " + send,server);
+
 		if(tooLong) {
 			try {
 				Thread.sleep(50);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-			sendMessage(contents,channel);
+			sendMessage(contents,server);
 		}
 	}
 	
-	public static void sendRcon(String contents) {
-		try {
-			for(GoldSrcServer g : myServ) {
-				hldschatLog.info(g.rconExec(contents));
+	/*public static void sendRcon(String contents) {
+		for(GoldSrcServer g : myServ) {
+			sendRcon(contents,g);
+		}
+	}*/
+	
+	public static void sendRcon(String contents, Server serv) {
+		sendRcon(contents,serv.getServerAddress());
+	}
+	
+	public static void sendRcon(String contents, String address) {
+		for(GoldSrcServer g : myServ) {
+			List<InetAddress> ip = g.getIpAddresses();
+			for(InetAddress i : ip) {
+				hldschatLog.info("serv address: " + i.getHostAddress() + " address param: " + address);
+				if(address.startsWith(i.getHostAddress())) {
+					sendRcon(contents,g);
+					return;
+				}
 			}
+		}
+		
+		hldschatLog.info("Unable to locate server at address: " + address + "\nMake sure it's in the config file.");
+	}
+	
+	public static void sendRcon(String contents, GoldSrcServer server) {
+		try {
+			hldschatLog.info(server.rconExec(contents));
 		} catch (TimeoutException e) {
 			hldschatLog.info("Timeout sending message to HLDS: " + e.toString());
 		} catch (SteamCondenserException e) {

@@ -7,6 +7,7 @@ public class DiscordService extends Service {
 	protected String serverId;
 	protected String ownerId;
 	protected String channelId;
+	protected String discordLink;
 	protected boolean sendWelcome;
 	protected boolean enableDelete;
 	
@@ -16,12 +17,17 @@ public class DiscordService extends Service {
 		serverId = makeString(settings.get("server-id"));
 		ownerId = makeString(settings.get("owner-id"));
 		channelId = makeString(settings.get("home-channel-id"));
+		discordLink = makeString(settings.get("discord-link"));
 		sendWelcome = makeBoolean(settings.get("send-welcome"));
 		enableDelete = makeBoolean(settings.get("enable-delete"));
 	}
 	
 	public String getToken() {
 		return token;
+	}
+	
+	public String getDiscordLink() {
+		return discordLink;
 	}
 	
 	public String getOwnerId() {

@@ -20,37 +20,6 @@ public class DiscordToTwitchEvent extends ListenerAdapter {
 	public void onGuildMessageReceived(GuildMessageReceivedEvent e) {
 		
 		Message received = new Message(e);
-		ChatHandler.onMessageReceived(received);
-		
-		if (e.getChannel().getId().equalsIgnoreCase(ConfigFile.getTwitchDiscordChannelID())) {
-			if(!e.getAuthor().getId().equalsIgnoreCase(DiscordMain.jda.getSelfUser().getId()) && !e.getMessage().getContentStripped().startsWith("#")) {
-				DiscordMain.discordLog.info("[" + e.getAuthor().getName() + "] " + e.getMessage().getContentStripped());
-				String contents = "{Discord} [" + e.getAuthor().getName() + "] " + e.getMessage().getContentStripped();
-				
-				
-				try {
-					IrcMain.sendMessage(contents);
-				}
-				catch (Exception ex){
-					DiscordMain.discordLog.info("Error sending message to IRC: " + ex.toString());
-				}
-				
-				try {
-					HitboxMain.sendMessage(contents);
-				}
-				catch (Exception ex){
-					DiscordMain.discordLog.info("Error sending message to Hitbox: " + ex.toString());
-				}
-				
-				try {
-					HLDSMain.sendMessage(contents);
-				}
-				catch (Exception ex) {
-					DiscordMain.discordLog.info("Error sending message to HLDS: " + ex.toString());
-				}
-				
-				BotMain.systemLog.trace("Should have sent: " + contents);
-			}
-		}		
+		ChatHandler.onMessageReceived(received);	
 	}
 }
