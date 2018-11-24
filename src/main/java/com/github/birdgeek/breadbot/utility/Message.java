@@ -42,7 +42,7 @@ public class Message {
 	}
 	
 	public boolean isCommand() {
-		return message.charAt(0) == '#';
+		return message.charAt(0) == '!';
 	}
 	
 	public String getAuthor() {

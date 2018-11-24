@@ -226,6 +226,10 @@ public class ConfigFile {
 		return discord.getOwnerId();
 	}
 	
+	public static String getDiscordInviteLink() {
+		return discord.getDiscordInviteLink();
+	}
+	
 	/*
 	 * Hitbox Functions
 	 */
@@ -317,6 +321,10 @@ public class ConfigFile {
 	 */
 	
 	public static List<Server> getServers() {
+		return servers.getServers();
+	}
+	
+	public static List<Server> getServer(String address) {
 		return servers.getServers();
 	}
 

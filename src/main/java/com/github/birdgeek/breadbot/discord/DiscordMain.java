@@ -27,10 +27,10 @@ public class DiscordMain {
 		try {
 			jda = new JDABuilder(AccountType.BOT)
 				.setToken(ConfigFile.getBotToken())
-				.addEventListener(new ChatEvent(jda, discordLog)) //Pass API and Specific Logger
-				.addEventListener(new InviteEvent()) 
+//				.addEventListener(new ChatEvent(jda, discordLog)) //Pass API and Specific Logger
+//				.addEventListener(new InviteEvent()) 
 				.addEventListener(new DiscordToTwitchEvent())
-				.addEventListener(new PmEvent(discordLog)) //Passes Logger
+//				.addEventListener(new PmEvent(discordLog)) //Passes Logger
 				.setGame(Game.playing("KuoushiBot v" + ConfigFile.getVersion())).build();
 //				.buildBlocking();
 			jda.awaitReady();

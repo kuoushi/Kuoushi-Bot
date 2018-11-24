@@ -30,9 +30,31 @@ public class ChatHandler {
 	
 	public static void onCommandReceived(Message m) {
 		switch(m.getMessage().substring(1)) {
-			case "serverstatus":	System.out.println(HLDSMain.getServerStatus());
+			case "serverstatus":	sendResponse(HLDSMain.getServerStatus(),m);
+									break;
+			case "server":
+			case "discord":			sendResponse(ConfigFile.getDiscordInviteLink(),m);
 									break;
 			default:				break;
+		}
+	}
+	
+	public static void sendResponse(String toSend, Message m) {
+		if(m.getService().equalsIgnoreCase("discord")) {
+			try {
+				DiscordMain.jda.getTextChannelById(m.getChannel())
+				.sendMessage(toSend).queue();
+			}
+			catch (Exception ex) {
+				BotMain.ircLog.info("Error sending message to Discord: " + ex.toString());
+			}
+		}
+		else if(m.getService().equalsIgnoreCase("twitch")) {
+			for(String s : toSend.split("\n")) {
+				if(!s.equals("")) {
+					IrcMain.sendMessage(s,m.getChannel().substring(1));
+				}
+			}
 		}
 	}
 	
@@ -108,8 +130,11 @@ public class ChatHandler {
 		String user = m.getAuthor();
 		String mess = m.getMessage();
 		
-		if (!ConfigFile.isIgnoredUser(user, "twitch") && !user.equalsIgnoreCase(IrcMain.irc.getNick())) {
-			if (ConfigFile.isRelayEnabled(chan)) {
+		if (m.isCommand()) {
+			onCommandReceived(m);
+		}
+		else if (!ConfigFile.isIgnoredUser(user, "twitch") && !user.equalsIgnoreCase(IrcMain.irc.getNick())) {
+			if (ConfigFile.isRelayEnabled(chan) && !m.isCommand()) {
 				if(IrcMain.channels.contains(chan)) {
 					Channel c = ConfigFile.getChannel(chan, "twitch");
 					

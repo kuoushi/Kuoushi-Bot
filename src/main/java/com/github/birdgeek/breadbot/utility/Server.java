@@ -30,7 +30,6 @@ public class Server {
 			c.updateService(Service.makeString(((JSONObject)chan).get("service")));
 			channels.add(c);
 		}
-//		channels = Service.makeList((JSONArray)j.get("relay-channels"));
 	}
 	
 	public String getServerAddress() {

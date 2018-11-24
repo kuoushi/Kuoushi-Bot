@@ -13,6 +13,7 @@ public class Service {
 	protected List<String> ignoredUsers;
 	protected String defaultDiscordRelayChannel;
 	protected String defaultDiscordAnnounceChannel;
+	protected String homeDiscordInviteLink; 
 	protected boolean enable;
 	
 	public Service() {
@@ -28,6 +29,11 @@ public class Service {
 		defaultDiscordRelayChannel = makeString(settings.get("default-discord-relay-channel-id"));
 		defaultDiscordAnnounceChannel = makeString(settings.get("default-discord-announce-channel-id"));
 		enable = makeBoolean(settings.get("enable"));
+		
+		homeDiscordInviteLink = "";
+		if(settings.containsKey("discord-link")) {
+			homeDiscordInviteLink = makeString(settings.get("discord-link"));
+		}
 		
 		moderators = makeList((JSONArray)settings.get("moderators"));
 		ignoredUsers = makeList((JSONArray)settings.get("ignored-users"));
@@ -74,6 +80,10 @@ public class Service {
 	
 	public String getDefaultDiscordAnnounceChannel() {
 		return defaultDiscordAnnounceChannel;
+	}
+	
+	public String getDiscordInviteLink() {
+		return homeDiscordInviteLink;
 	}
 	
 	public boolean isEnabled() {

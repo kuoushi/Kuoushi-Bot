@@ -4,26 +4,34 @@ import java.util.concurrent.TimeoutException;
 import java.util.List;
 import java.net.InetAddress;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.slf4j.Logger;
 
 import com.github.koraktor.steamcondenser.exceptions.SteamCondenserException;
 import com.github.koraktor.steamcondenser.steam.servers.GoldSrcServer;
+import com.github.koraktor.steamcondenser.steam.servers.GameServer;
+import com.github.koraktor.steamcondenser.steam.servers.SourceServer;
 import com.github.birdgeek.breadbot.utility.ConfigFile;
 import com.github.birdgeek.breadbot.utility.Server;
 
 
 public class HLDSMain {
 	static Logger hldschatLog;
-	private static List<GoldSrcServer> myServ;
+	private static List<GameServer> myServ;
 	
 	public static void setup(Logger log) {
 		hldschatLog = log;
-		myServ = new ArrayList<GoldSrcServer>();
+		myServ = new ArrayList<GameServer>();
 		int i = 0;
 		for(Server x : ConfigFile.getServers()) {
 			try {
-				myServ.add(new GoldSrcServer(x.getServerAddress()));
+				if(x.getServerType().equalsIgnoreCase("hlds")) {
+					myServ.add(new GoldSrcServer(x.getServerAddress()));
+				}
+				else if (x.getServerType().equalsIgnoreCase("source")) {
+					myServ.add(new SourceServer(x.getServerAddress()));
+				}
 				myServ.get(i).initialize();
 				myServ.get(i).rconAuth(x.getServerRcon());
 				i++;
@@ -38,13 +46,13 @@ public class HLDSMain {
 	}
 	
 	public static void sendMessage(String contents) {
-		for(GoldSrcServer s : myServ) {
+		for(GameServer s : myServ) {
 			sendMessage(contents,s);
 		}
 	}
 	
 	public static void sendMessage(String contents, Server serv) {
-		for(GoldSrcServer g : myServ) {
+		for(GameServer g : myServ) {
 			List<InetAddress> ip = g.getIpAddresses();
 			for(InetAddress i : ip) {
 				hldschatLog.info("serv address: " + i.getHostAddress() + " address param: " + serv.getServerAddress());
@@ -56,7 +64,7 @@ public class HLDSMain {
 		}
 	}
 	
-	public static void sendMessage(String contents, GoldSrcServer server) {
+	public static void sendMessage(String contents, GameServer server) {
 		boolean tooLong = false;
 		String send = contents;
 		
@@ -93,7 +101,7 @@ public class HLDSMain {
 	}
 	
 	public static void sendRcon(String contents, String address) {
-		for(GoldSrcServer g : myServ) {
+		for(GameServer g : myServ) {
 			List<InetAddress> ip = g.getIpAddresses();
 			for(InetAddress i : ip) {
 				hldschatLog.info("serv address: " + i.getHostAddress() + " address param: " + address);
@@ -107,26 +115,78 @@ public class HLDSMain {
 		hldschatLog.info("Unable to locate server at address: " + address + "\nMake sure it's in the config file.");
 	}
 	
-	public static void sendRcon(String contents, GoldSrcServer server) {
-		try {
-			hldschatLog.info(server.rconExec(contents));
-		} catch (TimeoutException e) {
-			hldschatLog.info("Timeout sending message to HLDS: " + e.toString());
-		} catch (SteamCondenserException e) {
-			hldschatLog.info("Error sending message to HLDS: " + e.toString());
+	public static void sendRcon(String contents, GameServer server) {
+		int retries = 10;
+		while(retries > 0) {
+			try {
+				hldschatLog.info(server.rconExec(contents));
+				break;
+			} catch (TimeoutException e) {
+				hldschatLog.info("Timeout sending message to HLDS: " + e.toString());
+				reconnect(server);
+				retries--;
+			} catch (SteamCondenserException e) {
+				hldschatLog.info("Error sending message to HLDS: " + e.toString());
+				retries--;
+			}
 		}
 	}
 	
 	public static void disconnect() {
-		for(GoldSrcServer g : myServ) {
+		for(GameServer g : myServ) {
 			g.disconnect();
 		}
 	}
 	
+	public static void reconnect(GameServer server) {
+		int retries = 10;
+		while(retries > 0) {
+			try {
+				server.initialize();
+				List<InetAddress> ip = server.getIpAddresses();
+				boolean breakOut = false;
+				
+				for(Server x : ConfigFile.getServers()) {  // This is the absolute most inefficient way of doing this
+					for(InetAddress i : ip) {
+						if(x.getServerAddress().startsWith(i.getHostAddress())) {
+							breakOut = true;
+							server.rconAuth(x.getServerRcon());
+							break;
+						}
+					}
+					if(breakOut) {
+						break;
+					}
+				}
+				break;
+			} catch (SteamCondenserException e) {
+				hldschatLog.info("Timeout reconnecting to HLDS: " + e.toString());
+				retries--;
+			} catch (TimeoutException e) {
+				hldschatLog.info("Error reconnecting to HLDS: " + e.toString());
+				retries--;
+			}
+		}
+	}
+// {gameId=300647710720, dedicated=100, networkVersion=48, maxPlayers=32, serverName=Dead Games Done Together - Jaykin Bacon: Source, secure=true, serverPort=27015, gameDir=HL2JKS, operatingSystem=119, serverId=-6203588949173075969, numberOfPlayers=1, appId=70, numberOfBots=0, passwordProtected=false, gameVersion=1.1.2.2, gameDescription=Half-Life 2: Jaykin' Bacon Source, mapName=BEACH3}
+// {gameId=940597837823, dedicated=100, networkVersion=17, maxPlayers=64, serverName=Kuoushi's Kool Battle Grounds 2 2.4 Server, secure=true, serverPort=27016, gameDir=bg2, operatingSystem=119, serverId=1691309188602396671, numberOfPlayers=0, serverTags=increased_maxplayers, appId=218, numberOfBots=0, passwordProtected=false, gameVersion=1.0.1.0, gameDescription=Battle Grounds 2 2.4, mapName=bg_woodland}
+	
 	public static String getServerStatus() {
 		String build = "";
-		for(GoldSrcServer g : myServ) {
-			build += g.toString() + "\n";
+		for(GameServer g : myServ) {
+			HashMap<String,Object> servInfo;
+			try {
+				g.updateServerInfo();
+				servInfo = g.getServerInfo();
+				Integer numPlayers = new Integer(servInfo.get("numberOfPlayers").toString());
+				Integer numBots = new Integer(servInfo.get("numberOfBots").toString());
+				int actPlayers = numPlayers - numBots;
+				build += "\n" + servInfo.get("serverName") + " (" + servInfo.get("gameDescription") + ") - " + actPlayers + "/" + servInfo.get("maxPlayers") + " - " + servInfo.get("mapName");
+			} catch (SteamCondenserException | TimeoutException e1) {
+				e1.printStackTrace();
+			}
+			
+//			build += "\n" + servInfo.get;// g.toString() + "\n";
 		}
 		return build;
 	}
