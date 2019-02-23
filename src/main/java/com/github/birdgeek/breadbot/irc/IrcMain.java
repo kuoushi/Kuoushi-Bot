@@ -57,12 +57,10 @@ public class IrcMain {
 	
 	public static void joinChannel(String contents) {
 		channels.add(contents);
-		irc.sendRaw().rawLine("JOIN #" + contents);
 	}
 	
 	public static void partChannel(String contents) {
 		channels.remove(channels.indexOf(contents));
-		irc.sendRaw().rawLine("PART #" + contents);
 	}
 
 }

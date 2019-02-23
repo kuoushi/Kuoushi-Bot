@@ -1,5 +1,8 @@
 package com.github.birdgeek.breadbot.irc;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.pircbotx.Configuration;
 import org.pircbotx.PircBotX;
 import org.pircbotx.output.OutputIRC;
@@ -15,6 +18,10 @@ public class IrcThread implements Runnable {
 	public void run() {
 
 		try {
+			List<String> x = new ArrayList<String>();
+			for(int i = 0; i < ConfigFile.getChannels("twitch").size(); i++) {
+				x.add("#" + ConfigFile.getChannels("twitch").get(i).getName());
+			}
 			Configuration config = new Configuration.Builder()
 					.setName(ConfigFile.getTwitchLoginUser())
 					.addServer("irc.twitch.tv", 6667)
@@ -23,6 +30,7 @@ public class IrcThread implements Runnable {
 					.setAutoReconnect(true)
 					.setAutoReconnectDelay(30000)
 					.setAutoReconnectAttempts(30)
+					.addAutoJoinChannels(x)
 					.buildConfiguration();
 				
 			IrcMain.irc = new PircBotX(config);

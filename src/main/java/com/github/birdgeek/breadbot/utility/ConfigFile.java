@@ -4,21 +4,25 @@ package com.github.birdgeek.breadbot.utility;
 import java.io.FileReader;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Date;
+import java.time.Duration;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 public class ConfigFile {
-	static String filename = "config.json"; //TODO Set this different for releases
+	static String filename = "myConfig.json"; //TODO Set this different for releases
 	private static List<Channel> channels;
 	private static Service twitch;
 	private static Service hitbox;
 	private static DiscordService discord;
 	private static HLDSService servers;
 	private static String version;
+	private static Date bootTime;
 	
 	public ConfigFile ()  {
+		bootTime = new Date();
 		JSONParser parser = new JSONParser();
 		
 		JSONObject jsconfig = new JSONObject();
@@ -74,6 +78,28 @@ public class ConfigFile {
 	
 	public static String getVersion() {
 		return version;
+	}
+	
+	public static String getUpTime() {
+		Duration d = Duration.ofMillis(new Date().getTime() - bootTime.getTime());
+		String build = "";
+		long days = d.toDays();
+		long hours = 0;
+		long minutes = 0; 
+		if(days > 0) {
+			build = days + " days, ";
+		}
+		if(d.toHours() > 0) {
+			hours = d.toHours() - (days * 24);
+			build += hours + " hours, ";
+		}
+		if(d.toMinutes() > 0) {
+			minutes = d.toMinutes() - (hours * 60) - (days * 24 * 60);
+			build += minutes + " minutes, ";
+		}
+		long seconds = d.getSeconds() - (minutes * 60) - (hours * 60 * 60) - (days * 24 * 60 * 60);
+		build += seconds + " seconds";
+		return build;
 	}
 	
 	private static Service getService(String s) {

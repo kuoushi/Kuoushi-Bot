@@ -33,7 +33,13 @@ public class ChatHandler {
 			case "serverstatus":	sendResponse(HLDSMain.getServerStatus(),m);
 									break;
 			case "server":
-			case "discord":			sendResponse(ConfigFile.getDiscordInviteLink(),m);
+			case "discord":			if(!m.getService().equals("discord"))
+										sendResponse(ConfigFile.getChannel(m.getChannel().substring(1), m.getService()).getDiscordLink(),m);
+									break;
+			case "information":
+			case "info":			sendResponse("Kuoushi-Bot v" + ConfigFile.getVersion() + " - Available Commands: !discord, !info, !uptime",m);
+									break;
+			case "uptime":			sendResponse("Current Uptime: " + ConfigFile.getUpTime(),m);
 									break;
 			default:				break;
 		}
@@ -61,6 +67,10 @@ public class ChatHandler {
 	public static void onDiscordReceived(Message m) {
 		boolean isHomeChannel = m.getChannel().equalsIgnoreCase(ConfigFile.getHomeChannel());
 		boolean isRelayChannel = ConfigFile.isRelayChannel(m.getChannel());
+		
+		if(m.getMessage().length() == 0) {
+			return;
+		}
 		
 		if(isRelayChannel && !m.isCommand()) {
 			if(!m.getAuthorId().equalsIgnoreCase(DiscordMain.jda.getSelfUser().getId())) {
@@ -130,7 +140,7 @@ public class ChatHandler {
 		String user = m.getAuthor();
 		String mess = m.getMessage();
 		
-		if (m.isCommand()) {
+		if (m.isCommand() && ConfigFile.getChannel(chan, "twitch").getCommands()) {
 			onCommandReceived(m);
 		}
 		else if (!ConfigFile.isIgnoredUser(user, "twitch") && !user.equalsIgnoreCase(IrcMain.irc.getNick())) {
@@ -141,8 +151,8 @@ public class ChatHandler {
 					try {
 						DiscordMain.jda.getTextChannelById(c.getRelayChannel())
 						.sendMessage(
-								"{**" + chan + "**}" +
-							    " [*" + user + "*] " + 
+								"{*" + chan + "*}" +
+							    " [**" + user + "**] " + 
 							    mess).queue();
 					}
 					catch (Exception ex) {
@@ -175,8 +185,8 @@ public class ChatHandler {
 				try {
 					DiscordMain.jda.getTextChannelById(c.getRelayChannel())
 					.sendMessage(
-							"{**" + chan + "**}" +
-						    " [*" + user + "*] " + 
+							"{*" + chan + "*}" +
+						    " [**" + user + "**] " + 
 						    mess).queue();
 				}
 				catch (Exception ex) {

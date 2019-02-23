@@ -19,6 +19,9 @@ public class Message {
 		authorId = e.getAuthor().getId();
 		channel = e.getChannel().getId();
 		message = e.getMessage().getContentStripped();
+		if(message.length() == 0 && e.getMessage().getAttachments().size() > 0) {
+			message = e.getMessage().getAttachments().get(0).getUrl();
+		}
 		service = "discord";
 		receivedOn = new Date();
 	}

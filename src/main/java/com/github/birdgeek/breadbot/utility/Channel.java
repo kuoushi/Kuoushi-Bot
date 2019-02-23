@@ -8,6 +8,7 @@ public class Channel {
 	private String service;
 	private boolean relay;
 	private boolean announce;
+	private boolean commands;
 	private boolean imageRepeat;
 	private String relayChannel;
 	private String announceChannel;
@@ -16,12 +17,14 @@ public class Channel {
 	private int currentViewers;
 	private String url;
 	private boolean online;
+	private String discordLink;
 	
 	public Channel() {
 		name = "kuoushi";
 		service = "twitch";
 		relay = true;
 		announce = true;
+		commands = true;
 		relayChannel = "";
 		announceChannel = "";
 		imageRepeat = false;
@@ -33,6 +36,10 @@ public class Channel {
 		service = (String)j.get("service");
 		relay = (boolean)j.get("relay");
 		announce = (boolean)j.get("announce");
+		commands = true;
+		if(j.containsKey("commands")) {
+			commands = (boolean)j.get("commands");
+		}
 		if(service.equals("hitbox") && j.containsKey("image-repeat")) {
 			imageRepeat = (boolean)j.get("image-repeat");
 		}
@@ -44,6 +51,12 @@ public class Channel {
 		}
 		if(j.containsKey("announce-channel")) {
 			announceChannel = (String)j.get("announce-channel");
+		}
+		if(j.containsKey("discordLink")) {
+			discordLink = (String)j.get("discordLink");
+		}
+		else {
+			discordLink = ConfigFile.getDiscordInviteLink();
 		}
 		online = false;
 		currentStatus = "";
@@ -170,6 +183,10 @@ public class Channel {
 		return announceChannel;
 	}
 	
+	public String getDiscordLink() {
+		return discordLink;
+	}
+	
 	public boolean getRelay() {
 		return relay;
 	}
@@ -180,6 +197,10 @@ public class Channel {
 	
 	public boolean getImageRepeat() {
 		return imageRepeat;
+	}
+	
+	public boolean getCommands() {
+		return commands;
 	}
 	
 	public boolean isOnline() {
